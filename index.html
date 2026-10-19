@@ -1,1433 +1,1929 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Avaliação Sensorial Infantil</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --paper:#FAF6EE;
-    --surface:#FFFFFF;
-    --ink:#2C2A25;
-    --ink-soft:#6B6558;
-    --line:#E2DACB;
-    --line-strong:#CFC3AC;
-    --folder:#2F5D57;
-    --folder-dark:#1F413C;
-    --folder-soft:#E4EEEA;
-    --tab-accent:#BD6B44;
-    --tab-accent-soft:#F3E2D8;
-    --danger:#A5443A;
-    --danger-soft:#F5E2DF;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Relatórios Técnicos — Terapia Ocupacional</title>
+    <style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#f4f6f9;
+  --surface:#ffffff;
+  --surface-2:#f9fafb;
+  --border:#e2e8f0;
+  --border-strong:#cbd5e1;
+  --text:#1e293b;
+  --text-soft:#475569;
+  --text-muted:#64748b;
+  --primary:#0f766e;
+  --primary-hover:#115e59;
+  --primary-soft:#ccfbf1;
+  --accent:#0ea5e9;
+  --danger:#b91c1c;
+  --danger-soft:#fee2e2;
+  --warning:#b45309;
+  --warning-soft:#fef3c7;
+  --success:#15803d;
+  --success-soft:#dcfce7;
+  --radius:10px;
+  --radius-sm:6px;
+  --shadow:0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+  --shadow-lg:0 10px 30px -10px rgba(15,23,42,.2);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
 
-    --dom-tatil:#BD6B44;
-    --dom-vestibular:#3E7CB1;
-    --dom-proprioceptivo:#4C7A4C;
-    --dom-auditivo:#B8862E;
-    --dom-visual:#7A5EA8;
-    --dom-oral:#C4577A;
-    --dom-interocepcao:#3E8E82;
-    --dom-modulacao:#6B6F8A;
-    --dom-praxia:#A67C3D;
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:var(--font);
+  color:var(--text);
+  background:var(--bg);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,textarea,select{font-family:inherit;font-size:inherit;color:inherit;}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
+h1,h2,h3,h4{margin:0;line-height:1.25;font-weight:600;}
+p{margin:0 0 .6em;}
 
-    --font-head:'Lora',Georgia,'Times New Roman',serif;
-    --font-body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    --radius-s:6px;
-    --radius-m:10px;
-    --shadow-card:0 1px 2px rgba(44,42,37,.06), 0 1px 0 rgba(44,42,37,.04);
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --paper:#1E1C18;
-      --surface:#272420;
-      --ink:#EFEAE0;
-      --ink-soft:#B4AB98;
-      --line:#3B362D;
-      --line-strong:#4C4636;
-      --folder:#5FA396;
-      --folder-dark:#7FBCAF;
-      --folder-soft:#243330;
-      --tab-accent:#E0916B;
-      --tab-accent-soft:#3A2A22;
-      --danger:#E08579;
-      --danger-soft:#3A2320;
-      --shadow-card:0 1px 2px rgba(0,0,0,.3);
-    }
-  }
-  :root[data-theme="dark"]{
-    --paper:#1E1C18;
-    --surface:#272420;
-    --ink:#EFEAE0;
-    --ink-soft:#B4AB98;
-    --line:#3B362D;
-    --line-strong:#4C4636;
-    --folder:#5FA396;
-    --folder-dark:#7FBCAF;
-    --folder-soft:#243330;
-    --tab-accent:#E0916B;
-    --tab-accent-soft:#3A2A22;
-    --danger:#E08579;
-    --danger-soft:#3A2320;
-    --shadow-card:0 1px 2px rgba(0,0,0,.3);
-  }
+/* ============================================================
+   LAYOUT PRINCIPAL
+   ============================================================ */
+.app{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:100vh;
+}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr;}
+}
 
-  *,*::before,*::after{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:var(--font-body);
-    font-size:15px;
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3{font-family:var(--font-head);font-weight:600;margin:0;color:var(--ink);}
-  p{margin:0 0 .6em;}
-  button{font-family:inherit;}
-  input,select,textarea{
-    font-family:inherit;
-    font-size:14px;
-    color:var(--ink);
-    background:var(--surface);
-    border:1px solid var(--line-strong);
-    border-radius:var(--radius-s);
-    padding:8px 10px;
-    width:100%;
-  }
-  input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{
-    outline:2px solid var(--folder);
-    outline-offset:1px;
-  }
-  textarea{resize:vertical;min-height:90px;line-height:1.5;}
-  label.field{display:block;margin-bottom:14px;}
-  label.field span.field-label{
-    display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:5px;font-weight:500;
-  }
-  .field-hint{font-size:12px;color:var(--ink-soft);margin-top:4px;}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;}
-  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
-  @media(max-width:720px){.grid-2,.grid-3{grid-template-columns:1fr;}}
-
-  button.btn{
-    cursor:pointer;border-radius:var(--radius-s);border:1px solid var(--line-strong);
-    background:var(--surface);color:var(--ink);padding:9px 16px;font-size:13.5px;font-weight:600;
-    transition:background .15s ease, border-color .15s ease;
-  }
-  button.btn:hover{border-color:var(--folder);}
-  button.btn-primary{background:var(--folder);border-color:var(--folder);color:#fff;}
-  button.btn-primary:hover{background:var(--folder-dark);border-color:var(--folder-dark);}
-  button.btn-accent{background:var(--tab-accent);border-color:var(--tab-accent);color:#fff;}
-  button.btn-ghost{background:transparent;border-color:transparent;color:var(--ink-soft);}
-  button.btn-ghost:hover{color:var(--ink);background:var(--folder-soft);}
-  button.btn-danger{background:transparent;border-color:var(--line-strong);color:var(--danger);}
-  button.btn-danger:hover{background:var(--danger-soft);border-color:var(--danger);}
-  button.btn-sm{padding:5px 10px;font-size:12.5px;}
-  button:disabled{opacity:.45;cursor:not-allowed;}
-
-  #app{min-height:100vh;display:flex;flex-direction:column;}
-  .topbar{
-    display:flex;align-items:center;gap:14px;padding:12px 20px;
-    border-bottom:1px solid var(--line);background:var(--surface);
-    position:sticky;top:0;z-index:20;
-  }
-  .brand{display:flex;align-items:center;gap:10px;min-width:0;}
-  .brand-mark{
-    width:34px;height:34px;border-radius:8px;background:var(--folder);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-size:17px;flex:none;
-  }
-  .brand-text{min-width:0;}
-  .brand-title{font-family:var(--font-head);font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .brand-sub{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .topbar-spacer{flex:1;}
-  .menu-toggle{display:none;}
-  .icon-btn{
-    width:34px;height:34px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--ink-soft);
-  }
-  .icon-btn:hover{color:var(--ink);border-color:var(--folder);}
-
-  .shell{display:flex;flex:1;min-height:0;}
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:20px 16px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+@media (max-width:900px){
   .sidebar{
-    width:280px;flex:none;border-right:1px solid var(--line);background:var(--surface);
-    display:flex;flex-direction:column;min-height:0;
+    position:fixed;top:0;left:0;bottom:0;width:260px;z-index:50;
+    transform:translateX(-100%);transition:transform .2s ease;
+    box-shadow:var(--shadow-lg);
   }
-  .sidebar-head{padding:16px 16px 10px;}
-  .sidebar-search{padding:0 16px 12px;}
-  .sidebar-list{flex:1;overflow-y:auto;padding:0 10px 16px;}
-  .patient-row{
-    display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:var(--radius-s);
-    cursor:pointer;border-left:3px solid transparent;margin-bottom:2px;
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:40;
   }
-  .patient-row:hover{background:var(--folder-soft);}
-  .patient-row.active{background:var(--folder-soft);border-left-color:var(--folder);}
-  .patient-row-main{min-width:0;flex:1;}
-  .patient-row-name{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .patient-row-meta{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .patient-row-del{opacity:0;flex:none;}
-  .patient-row:hover .patient-row-del{opacity:1;}
-  .empty-list{padding:18px 10px;color:var(--ink-soft);font-size:13px;}
+  .sidebar-backdrop.open{display:block;}
+}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.brand-mark{
+  width:38px;height:38px;border-radius:8px;background:var(--primary);
+  color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;
+}
+.brand-title{font-size:14px;font-weight:700;line-height:1.2;}
+.brand-subtitle{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
 
-  .sidebar-overlay{display:none;}
+.nav-steps{list-style:none;padding:0;margin:0 0 20px;}
+.nav-steps li{margin-bottom:2px;}
+.nav-btn{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:9px 10px;border-radius:var(--radius-sm);color:var(--text-soft);
+  font-size:14px;transition:background .15s, color .15s;
+}
+.nav-btn:hover{background:var(--surface-2);color:var(--text);}
+.nav-btn.active{background:var(--primary-soft);color:var(--primary-hover);font-weight:600;}
+.nav-btn .num{
+  width:22px;height:22px;border-radius:50%;background:var(--border);
+  display:grid;place-items:center;font-size:11px;font-weight:700;flex:0 0 auto;
+}
+.nav-btn.active .num{background:var(--primary);color:#fff;}
+.nav-btn.done .num{background:var(--success);color:#fff;}
 
-  .main{flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto;}
-  .main-inner{max-width:860px;width:100%;margin:0 auto;padding:24px 24px 80px;flex:1;}
+.sidebar-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+.sidebar-section h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:8px;}
 
-  .patient-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
-  .patient-header h1{font-size:22px;}
-  .patient-header .sub{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
-  .save-status{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;padding-bottom:2px;}
-  .save-status.pending::before{content:"● ";color:var(--tab-accent);}
-  .save-status.saved::before{content:"✓ ";color:var(--folder);}
+.side-action{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  padding:8px 10px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-soft);
+}
+.side-action:hover{background:var(--surface-2);color:var(--text);}
 
-  .step-track{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:22px;overflow-x:auto;}
-  .step-tab{
-    flex:none;display:flex;align-items:center;gap:7px;padding:9px 14px;border:1px solid transparent;
-    border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;color:var(--ink-soft);font-size:13px;font-weight:600;
-    background:transparent;white-space:nowrap;margin-bottom:-1px;
+/* ---------- ÁREA PRINCIPAL ---------- */
+.main{padding:24px 28px 60px;max-width:1100px;width:100%;}
+@media (max-width:600px){.main{padding:16px;}}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-bottom:24px;flex-wrap:wrap;
+}
+.topbar h1{font-size:22px;}
+.topbar .subtitle{color:var(--text-muted);font-size:13px;}
+.hamburger{
+  display:none;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface);
+}
+@media (max-width:900px){.hamburger{display:grid;place-items:center;}}
+
+/* ---------- CARDS / SEÇÕES ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;
+}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--border);
+  cursor:pointer;user-select:none;
+}
+.card-head:hover{background:var(--surface-2);}
+.card-head h2{font-size:15px;}
+.card-head .chev{transition:transform .2s;color:var(--text-muted);}
+.card.collapsed .card-head .chev{transform:rotate(-90deg);}
+.card.collapsed .card-body{display:none;}
+.card-body{padding:18px;}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+@media (max-width:720px){.grid{grid-template-columns:1fr;}}
+.grid-full{grid-column:1/-1;}
+
+/* ---------- CAMPOS ---------- */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:2px;}
+.field label{font-size:12px;font-weight:600;color:var(--text-soft);}
+.field .hint{font-size:11px;color:var(--text-muted);font-weight:400;}
+.field input[type=text],
+.field input[type=date],
+.field input[type=number],
+.field input[type=email],
+.field input[type=tel],
+.field textarea,
+.field select{
+  padding:9px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);
+  background:#fff;transition:border-color .15s, box-shadow .15s;font-size:14px;
+  width:100%;resize:vertical;
+}
+.field textarea{min-height:80px;line-height:1.5;}
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  outline:none;border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(15,118,110,.15);
+}
+.field.error input,.field.error textarea,.field.error select{border-color:var(--danger);}
+.field .error-msg{color:var(--danger);font-size:11.5px;display:none;}
+.field.error .error-msg{display:block;}
+
+/* ---------- BOTÕES ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:13.5px;
+  transition:background .15s, transform .05s, border-color .15s;white-space:nowrap;
+  border:1px solid transparent;
+}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-secondary{background:var(--surface);border-color:var(--border-strong);color:var(--text);}
+.btn-secondary:hover{background:var(--surface-2);}
+.btn-ghost{background:transparent;color:var(--text-soft);}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text);}
+.btn-danger{background:var(--danger-soft);color:var(--danger);}
+.btn-danger:hover{background:#fecaca;}
+.btn-sm{padding:6px 11px;font-size:12.5px;}
+.btn-block{width:100%;}
+
+.actions-row{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  padding:16px 0;border-top:1px solid var(--border);margin-top:20px;
+}
+.actions-row .spacer{flex:1;}
+
+/* ---------- ALERTAS ---------- */
+.alert{
+  display:flex;gap:10px;padding:12px 14px;border-radius:var(--radius-sm);
+  font-size:13.5px;margin-bottom:16px;align-items:flex-start;
+}
+.alert-info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;}
+.alert-warn{background:var(--warning-soft);color:var(--warning);border:1px solid #fde68a;}
+.alert-error{background:var(--danger-soft);color:var(--danger);border:1px solid #fecaca;}
+.alert-success{background:var(--success-soft);color:var(--success);border:1px solid #bbf7d0;}
+
+/* ---------- TIPO DE RELATÓRIO (cards) ---------- */
+.report-types{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media (max-width:720px){.report-types{grid-template-columns:1fr;}}
+.type-card{
+  border:2px solid var(--border);border-radius:var(--radius);padding:14px 16px;
+  cursor:pointer;transition:border-color .15s, background .15s;background:var(--surface);
+  text-align:left;
+}
+.type-card:hover{border-color:var(--border-strong);}
+.type-card.selected{border-color:var(--primary);background:var(--primary-soft);}
+.type-card strong{display:block;font-size:14px;margin-bottom:3px;}
+.type-card span{font-size:12.5px;color:var(--text-soft);}
+
+/* ---------- INSTRUMENTOS ---------- */
+.instrument-item{
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px;margin-bottom:12px;background:var(--surface-2);
+}
+.instrument-head{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+  font-size:12px;font-weight:600;color:var(--text-muted);
+}
+
+/* ---------- BADGES ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;
+  font-size:11px;font-weight:600;
+}
+.badge-edited{background:var(--warning-soft);color:var(--warning);}
+.badge-generated{background:var(--primary-soft);color:var(--primary-hover);}
+.badge-hidden{background:var(--border);color:var(--text-muted);}
+
+/* ============================================================
+   PRÉVIA / EDITOR A4
+   ============================================================ */
+.preview-toolbar{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:16px;position:sticky;top:12px;z-index:10;
+  box-shadow:var(--shadow);
+}
+.preview-toolbar .spacer{flex:1;}
+
+.a4-wrap{
+  display:flex;justify-content:center;padding:20px 0;
+}
+.a4{
+  width:210mm;min-height:297mm;background:#fff;
+  padding:20mm 18mm;box-shadow:var(--shadow-lg);
+  color:#111;
+  font-size:11.5pt;
+  line-height:1.55;
+}
+@media (max-width:820px){
+  .a4{width:100%;padding:16px;min-height:auto;font-size:15px;}
+}
+
+/* Estilos do documento gerado */
+.doc-header{
+  display:flex;gap:16px;align-items:center;
+  padding-bottom:12px;border-bottom:2px solid var(--primary);margin-bottom:20px;
+}
+.doc-logo{max-height:64px;max-width:120px;object-fit:contain;}
+.doc-header-info{flex:1;font-size:10pt;color:#334155;text-align:center;}
+.doc-local{display:block;font-family:'Bodoni MT Black','Bodoni MT','Bodoni 72',Didot,'Times New Roman',serif;font-size:36pt;font-weight:700;line-height:1.1;color:#475569;margin-bottom:4px;}
+.doc-reg{display:block;font-family:Arial,Helvetica,sans-serif;font-size:10pt;color:#475569;}
+.doc-tel{display:block;font-family:Arial,Helvetica,sans-serif;font-size:12pt;color:#475569;}
+@media (max-width:820px){.doc-local{font-size:24pt;}.doc-header-info strong{font-size:16pt;}}
+.doc-header-info strong{display:block;font-family:'Bookman Old Style','Bookman','URW Bookman',Georgia,serif;font-size:20pt;font-weight:700;color:#0f172a;margin-bottom:2px;}
+.doc-title{
+  text-align:center;font-size:13pt;font-weight:700;letter-spacing:.02em;
+  text-transform:uppercase;margin:18px 0 22px;color:#0f172a;
+}
+.doc-section{margin-bottom:16px;}
+.doc-section-head{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  margin-bottom:6px;
+}
+.doc-section h3{
+  font-size:11pt;color:var(--primary-hover);border-bottom:1px solid #cbd5e1;
+  padding-bottom:3px;flex:1;
+}
+.doc-section-tools{
+  display:flex;gap:2px;opacity:0;transition:opacity .15s;
+}
+.doc-section:hover .doc-section-tools{opacity:1;}
+.doc-section-tools button{
+  padding:3px 6px;border-radius:4px;font-size:12px;color:var(--text-muted);
+}
+.doc-section-tools button:hover{background:var(--surface-2);color:var(--text);}
+.doc-section[hidden]{display:none;}
+.doc-section[data-manual="true"] .doc-section-head::after{
+  content:"editada";font-size:9px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--warning);background:var(--warning-soft);
+  padding:2px 6px;border-radius:10px;
+}
+.doc-content{
+  outline:none;
+}
+.doc-content:focus{background:#fffbeb;border-radius:4px;}
+.doc-content p{margin:0 0 8px;text-align:justify;}
+.doc-content p:last-child{margin-bottom:0;}
+.doc-content .placeholder{color:#94a3b8;font-style:italic;}
+
+.doc-footer{
+  margin-top:36px;padding-top:16px;border-top:1px solid #cbd5e1;
+  font-size:9.5pt;color:#475569;
+}
+.doc-signature{
+  margin-top:48px;text-align:center;
+}
+.doc-signature .line{
+  width:280px;max-width:80%;margin:0 auto;border-top:1px solid #334155;
+  padding-top:6px;font-size:10pt;
+}
+.doc-signature .local-date{margin-bottom:32px;font-size:10pt;text-align:left;}
+
+/* Lista de instrumentos no documento */
+.doc-instrument{margin-bottom:10px;}
+.doc-instrument strong{color:#0f172a;}
+
+/* ============================================================
+   IMPRESSÃO
+   ============================================================ */
+@media print{
+  @page{size:A4;margin:18mm 18mm 20mm;@bottom-center{content:"Página " counter(page) " de " counter(pages);font-size:9pt;color:#64748b;}}
+  body{background:#fff;}
+  .sidebar,.sidebar-backdrop,.topbar,.preview-toolbar,
+  .doc-section-tools,.no-print{display:none !important;}
+  .app{display:block;}
+  .main{padding:0;max-width:100%;}
+  .a4{
+    width:auto;min-height:auto;box-shadow:none;padding:0;margin:0;
+    font-size:11pt;
   }
-  .step-tab .num{
-    width:18px;height:18px;border-radius:50%;background:var(--line);color:var(--surface);
-    font-size:10.5px;display:flex;align-items:center;justify-content:center;flex:none;font-weight:700;
-  }
-  .step-tab.active{color:var(--ink);background:var(--surface);border-color:var(--line);border-bottom:1px solid var(--surface);}
-  .step-tab.active .num{background:var(--folder);}
-  .step-tab:hover:not(.active){color:var(--ink);}
+  .doc-section h3{border-bottom:1px solid #94a3b8;}
+  h2,h3,.doc-section-head{break-after:avoid;page-break-after:avoid;}
+  .doc-signature,.doc-instrument{break-inside:avoid;}
+  .doc-section-head::after{display:none !important;}
+  p{orphans:3;widows:3;}
+}
 
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);box-shadow:var(--shadow-card);padding:22px 22px;margin-bottom:16px;}
-  .card h2{font-size:16.5px;margin-bottom:3px;}
-  .card .card-desc{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;}
-  fieldset{border:none;padding:0;margin:0 0 18px;}
-  fieldset legend{font-family:var(--font-head);font-size:13.5px;font-weight:600;color:var(--folder);padding:0 0 10px;}
-
-  .step-panel{display:none;}
-  .step-panel.active{display:block;animation:fadein .18s ease;}
-  @keyframes fadein{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
-
-  .step-nav{display:flex;justify-content:space-between;margin-top:22px;}
-
-  .empty-state{
-    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-    padding:60px 20px;color:var(--ink-soft);
-  }
-  .empty-state .mark{font-size:32px;margin-bottom:10px;}
-  .empty-state h2{font-family:var(--font-head);font-size:18px;color:var(--ink);margin-bottom:6px;}
-  .empty-state p{max-width:360px;font-size:13.5px;}
-
-  .domain-card{border:1px solid var(--line);border-left-width:5px;border-radius:var(--radius-m);margin-bottom:12px;background:var(--surface);overflow:hidden;}
-  .domain-head{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;}
-  .domain-dot{width:10px;height:10px;border-radius:50%;flex:none;}
-  .domain-name{font-weight:600;font-size:14px;flex:1;}
-  .domain-badge{font-size:11px;padding:3px 9px;border-radius:20px;color:var(--ink-soft);background:var(--folder-soft);white-space:nowrap;}
-  .domain-caret{color:var(--ink-soft);font-size:12px;transition:transform .15s ease;flex:none;}
-  .domain-card.open .domain-caret{transform:rotate(90deg);}
-  .domain-body{display:none;padding:4px 16px 16px;}
-  .domain-card.open .domain-body{display:block;}
-  .check-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--line);}
-  .check-item:first-child{border-top:none;}
-  .check-item-text{font-size:13px;flex:1;}
-  .scale{display:flex;gap:4px;flex:none;}
-  .scale-btn{
-    width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);
-    color:var(--ink-soft);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  }
-  .scale-btn.active{background:var(--folder);border-color:var(--folder);color:#fff;}
-  .scale-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);margin-bottom:16px;padding:10px 12px;background:var(--folder-soft);border-radius:var(--radius-s);}
-  .scale-legend span{display:flex;align-items:center;gap:5px;}
-  .scale-legend b{display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--folder);color:#fff;font-size:9px;text-align:center;line-height:16px;}
-
-  .achado-row{display:grid;grid-template-columns:150px 1fr 1.3fr;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line);}
-  .achado-row:first-child{border-top:none;}
-  .achado-label{display:flex;align-items:center;gap:8px;padding-top:9px;}
-  .achado-hint{font-size:11px;color:var(--ink-soft);margin-top:4px;}
-  @media(max-width:720px){.achado-row{grid-template-columns:1fr;}.achado-label{padding-top:0;}}
-
-  .disclaimer{font-size:12px;color:var(--ink-soft);background:var(--folder-soft);border-radius:var(--radius-s);padding:10px 12px;margin-bottom:18px;}
-
-  .goal-card{border:1px solid var(--line);border-radius:var(--radius-m);padding:16px;margin-bottom:12px;position:relative;}
-  .goal-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-  .goal-card-head span{font-size:12px;font-weight:700;color:var(--tab-accent);}
-
-  .modal-overlay{
-    position:fixed;inset:0;background:rgba(20,18,14,.45);display:none;align-items:center;justify-content:center;
-    z-index:100;padding:20px;
-  }
-  .modal-overlay.open{display:flex;}
-  .modal{background:var(--surface);border-radius:var(--radius-m);max-width:420px;width:100%;padding:24px;border:1px solid var(--line);}
-  .modal h2{font-size:16px;margin-bottom:14px;}
-  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
-
-  .toast{
-    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);
-    padding:10px 18px;border-radius:20px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s ease;
-  }
-  .toast.show{opacity:1;}
-
-  #print-report{display:none;}
-  @media print{
-    body *{visibility:hidden;}
-    #print-report,#print-report *{visibility:visible;}
-    #print-report{display:block !important;position:absolute;top:0;left:0;width:100%;}
-    .no-print{display:none !important;}
-  }
-  .pr-header{border-bottom:2px solid var(--folder);padding-bottom:12px;margin-bottom:18px;}
-  .pr-header .clinic{font-family:var(--font-head);font-size:19px;font-weight:600;}
-  .pr-header .therapist{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
-  .pr-header .date{font-size:11.5px;color:var(--ink-soft);margin-top:6px;}
-  .pr-section{margin-bottom:18px;}
-  .pr-section h3{font-family:var(--font-head);font-size:14.5px;color:var(--folder);border-bottom:1px solid var(--line);padding-bottom:5px;margin-bottom:8px;}
-  .pr-section p{font-size:13px;white-space:pre-wrap;}
-  .pr-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:12.5px;margin-bottom:6px;}
-  .pr-domain-line{font-size:12.5px;margin-bottom:5px;}
-  .pr-domain-line b{color:var(--folder);}
-  .pr-goal{font-size:12.5px;margin-bottom:8px;padding-left:12px;border-left:2px solid var(--tab-accent);}
-  .pr-sign{margin-top:40px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;}
-
-  @media(max-width:900px){
-    .sidebar{
-      position:fixed;top:0;left:0;bottom:0;z-index:60;transform:translateX(-100%);transition:transform .2s ease;
-      box-shadow:2px 0 16px rgba(0,0,0,.15);
-    }
-    .sidebar.open{transform:translateX(0);}
-    .sidebar-overlay.open{display:block;position:fixed;inset:0;background:rgba(20,18,14,.4);z-index:55;}
-    .menu-toggle{display:flex;}
-    .main-inner{padding:18px 16px 70px;}
-    .achado-row{grid-template-columns:1fr;}
-  }
+/* ============================================================
+   UTIL
+   ============================================================ */
+.hidden{display:none !important;}
+/* ---------- MODO ESCURO ---------- */
+.a4{--text:#1e293b;--text-soft:#475569;--text-muted:#64748b;--border:#e2e8f0;--surface-2:#f9fafb;--primary-hover:#115e59;--warning:#b45309;--warning-soft:#fef3c7;color-scheme:light;}
+html[data-theme="dark"]{color-scheme:dark;--bg:#0f172a;--surface:#1e293b;--surface-2:#273449;--border:#334155;--border-strong:#475569;--text:#e2e8f0;--text-soft:#cbd5e1;--text-muted:#94a3b8;--primary-soft:#134e4a;--primary-hover:#5eead4;--danger:#fca5a5;--danger-soft:#450a0a;--warning:#fcd34d;--warning-soft:#422006;--success:#86efac;--success-soft:#052e16;}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .field select{background:var(--surface-2);color:var(--text);}
+html[data-theme="dark"] .alert{border-color:var(--border-strong);}
+html[data-theme="dark"] .alert-info{background:#172554;color:#bfdbfe;border-color:#1e3a8a;}
+html[data-theme="dark"] .btn-primary:hover{background:#0d9488;}
+html[data-theme="dark"] .btn-danger:hover{background:#7f1d1d;}
+html[data-theme="dark"] :focus-visible{outline-color:#5eead4;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+@media (hover:none){.doc-section-tools{opacity:1;}}
+.mt-16{margin-top:16px;}
+.mt-24{margin-top:24px;}
+.text-muted{color:var(--text-muted);}
+.text-sm{font-size:13px;}
 </style>
-</head>
-<body>
-<div id="app">
-
-  <div class="topbar no-print">
-    <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Abrir lista de pacientes">☰</button>
-    <div class="brand">
-      <div class="brand-mark">♾️</div>
-      <div class="brand-text">
-        <div class="brand-title" id="brandTitle">Sistema de Avaliação Sensorial</div>
-        <div class="brand-sub" id="brandSub">Terapia Ocupacional infantil</div>
-      </div>
+  </head>
+  <body>
+    <!-- ==================== BACKDROP MOBILE ==================== -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true">
     </div>
-    <div class="topbar-spacer"></div>
-    <button class="icon-btn" id="settingsBtn" aria-label="Configurações da clínica">⚙️</button>
-  </div>
-
-  <div class="shell">
-    <div class="sidebar-overlay no-print" id="sidebarOverlay"></div>
-    <aside class="sidebar no-print" id="sidebar">
-      <div class="sidebar-head">
-        <button class="btn btn-primary" id="newPatientBtn" style="width:100%;">+ Novo paciente</button>
-      </div>
-      <div class="sidebar-search">
-        <input type="text" id="searchInput" placeholder="Buscar paciente...">
-      </div>
-      <div class="sidebar-list" id="patientList"></div>
-    </aside>
-
-    <main class="main">
-      <div class="main-inner" id="mainInner">
-        <div class="empty-state" id="emptyState">
-          <div class="mark">♾️</div>
-          <h2>Nenhum paciente selecionado</h2>
-          <p>Crie um novo paciente ou selecione um da lista para começar a triagem, o checklist sensorial e o planejamento terapêutico.</p>
-          <button class="btn btn-primary" id="emptyNewBtn" style="margin-top:14px;">+ Novo paciente</button>
-        </div>
-
-        <div id="workspace" style="display:none;">
-          <div class="patient-header no-print">
-            <div>
-              <h1 id="patientTitle">—</h1>
-              <div class="sub" id="patientSub"></div>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span class="save-status saved" id="saveStatus">Salvo</span>
-              <button class="btn" id="printBtn">🖨️ Gerar / imprimir relatório</button>
-            </div>
+    <div class="app">
+      <!-- ==================== SIDEBAR ==================== -->
+      <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+        <div class="brand">
+          <div class="brand-mark">TO</div>
+          <div>
+            <div class="brand-title">Gerador de Relatórios</div>
+            <div class="brand-subtitle">Terapia Ocupacional</div>
           </div>
-
-          <div class="step-track no-print" id="stepTrack">
-            <button class="step-tab" data-step="1"><span class="num">1</span> Triagem e anamnese</button>
-            <button class="step-tab" data-step="2"><span class="num">2</span> Observação sensorial</button>
-            <button class="step-tab" data-step="3"><span class="num">3</span> Achados e hipóteses</button>
-            <button class="step-tab" data-step="4"><span class="num">4</span> Devolutiva e relatório</button>
-            <button class="step-tab" data-step="5"><span class="num">5</span> Plano terapêutico</button>
-          </div>
-
-          <section class="step-panel" data-step="1" id="mainForm">
-            <div class="card">
-              <h2>Dados da criança e da família</h2>
-              <p class="card-desc">Informações iniciais de identificação e contexto de encaminhamento.</p>
-              <div class="grid-2">
-                <label class="field"><span class="field-label">Nome completo da criança</span><input type="text" data-path="triagem.childName"></label>
-                <label class="field"><span class="field-label">Data de nascimento</span><input type="date" data-path="triagem.birthDate"></label>
-                <label class="field"><span class="field-label">Nome do responsável</span><input type="text" data-path="triagem.guardianName"></label>
-                <label class="field"><span class="field-label">Parentesco</span><input type="text" data-path="triagem.guardianRelation" placeholder="mãe, pai, avó..."></label>
-                <label class="field"><span class="field-label">Telefone / WhatsApp</span><input type="text" data-path="triagem.guardianPhone"></label>
-                <label class="field"><span class="field-label">E-mail</span><input type="email" data-path="triagem.guardianEmail"></label>
-                <label class="field"><span class="field-label">Escola e série</span><input type="text" data-path="triagem.school"></label>
-                <label class="field"><span class="field-label">Diagnóstico(s) prévio(s) / CID, se houver</span><input type="text" data-path="triagem.priorDiagnosis"></label>
-                <label class="field"><span class="field-label">Encaminhado por</span><input type="text" data-path="triagem.referredBy"></label>
-                <label class="field"><span class="field-label">Outros acompanhamentos</span><input type="text" data-path="triagem.otherTherapies" placeholder="fono, psicologia, neuro..."></label>
-              </div>
-              <label class="field"><span class="field-label">Motivo do encaminhamento</span><textarea data-path="triagem.referralReason" style="min-height:60px;"></textarea></label>
-              <label class="field"><span class="field-label">Queixa principal da família</span><textarea data-path="triagem.chiefComplaint"></textarea></label>
-            </div>
-
-            <div class="card">
-              <h2>Histórico gestacional, nascimento e desenvolvimento</h2>
-              <div class="grid-3">
-                <label class="field"><span class="field-label">Gestação e parto</span><input type="text" data-path="triagem.pregnancyBirth" placeholder="tipo de parto, intercorrências"></label>
-                <label class="field"><span class="field-label">Prematuridade</span><input type="text" data-path="triagem.prematurity" placeholder="sim/não, semanas"></label>
-                <label class="field"><span class="field-label">Peso ao nascer</span><input type="text" data-path="triagem.birthWeight"></label>
-              </div>
-              <div class="grid-3">
-                <label class="field"><span class="field-label">Sustentou a cabeça / sentou</span><input type="text" data-path="triagem.milestoneSit"></label>
-                <label class="field"><span class="field-label">Engatinhou</span><input type="text" data-path="triagem.milestoneCrawl"></label>
-                <label class="field"><span class="field-label">Andou</span><input type="text" data-path="triagem.milestoneWalk"></label>
-              </div>
-              <div class="grid-3">
-                <label class="field"><span class="field-label">Primeiras palavras</span><input type="text" data-path="triagem.milestoneWords"></label>
-                <label class="field"><span class="field-label">Controle esfincteriano</span><input type="text" data-path="triagem.milestoneToilet"></label>
-                <label class="field"><span class="field-label">Alergias</span><input type="text" data-path="triagem.allergies"></label>
-              </div>
-            </div>
-
-            <div class="card">
-              <h2>Rotina, saúde e contexto familiar</h2>
-              <label class="field"><span class="field-label">Rotina diária e composição familiar</span><textarea data-path="triagem.familyRoutine"></textarea></label>
-              <div class="grid-2">
-                <label class="field"><span class="field-label">Sono</span><textarea data-path="triagem.sleep" style="min-height:60px;"></textarea></label>
-                <label class="field"><span class="field-label">Alimentação</span><textarea data-path="triagem.feeding" style="min-height:60px;"></textarea></label>
-              </div>
-              <div class="grid-2">
-                <label class="field"><span class="field-label">Histórico de saúde</span><textarea data-path="triagem.healthHistory" style="min-height:60px;"></textarea></label>
-                <label class="field"><span class="field-label">Medicações em uso</span><textarea data-path="triagem.medications" style="min-height:60px;"></textarea></label>
-              </div>
-            </div>
-            <div class="step-nav"><span></span><button class="btn btn-primary" data-goto="2">Próximo: Observação sensorial →</button></div>
-          </section>
-
-          <section class="step-panel" data-step="2">
-            <div class="card">
-              <h2>Checklist de sinais sensoriais</h2>
-              <p class="card-desc">Marque a frequência observada (pela família ou em sessão) para cada comportamento. Não é um teste padronizado — é um apoio para organizar a observação clínica.</p>
-              <div class="scale-legend" id="scaleLegend"></div>
-              <div id="domainsContainer"></div>
-            </div>
-
-            <div class="card">
-              <h2>Observação clínica estruturada</h2>
-              <p class="card-desc">Registro do que foi observado diretamente durante a sessão de avaliação.</p>
-              <div class="grid-2">
-                <label class="field"><span class="field-label">Engajamento e atenção na sessão</span><textarea data-path="observacao.engagement" style="min-height:70px;"></textarea></label>
-                <label class="field"><span class="field-label">Tipo de brincar predominante</span><textarea data-path="observacao.playType" style="min-height:70px;" placeholder="sensorial, funcional, simbólico, construtivo..."></textarea></label>
-                <label class="field"><span class="field-label">Coordenação e desempenho motor</span><textarea data-path="observacao.motorObs" style="min-height:70px;"></textarea></label>
-                <label class="field"><span class="field-label">Interação social</span><textarea data-path="observacao.socialObs" style="min-height:70px;"></textarea></label>
-                <label class="field"><span class="field-label">Estratégias de autorregulação observadas</span><textarea data-path="observacao.selfRegObs" style="min-height:70px;"></textarea></label>
-                <label class="field"><span class="field-label">Desempenho em AVDs (vestir-se, higiene, alimentação)</span><textarea data-path="observacao.adlNotes" style="min-height:70px;"></textarea></label>
-              </div>
-            </div>
-            <div class="step-nav"><button class="btn" data-goto="1">← Triagem e anamnese</button><button class="btn btn-primary" data-goto="3">Próximo: Achados e hipóteses →</button></div>
-          </section>
-
-          <section class="step-panel" data-step="3">
-            <div class="card">
-              <h2>Organização dos achados por domínio</h2>
-              <p class="card-desc">A média do checklist é só uma referência visual — o padrão clínico é sempre definido pelo seu julgamento profissional.</p>
-              <div id="achadosContainer"></div>
-            </div>
-            <div class="card">
-              <h2>Hipóteses clínicas e funcionais</h2>
-              <label class="field"><span class="field-label">Quais padrões se repetem? Qual o impacto funcional no dia a dia?</span><textarea data-path="achados.hypotheses" style="min-height:110px;"></textarea></label>
-              <label class="field"><span class="field-label">Áreas prioritárias para intervenção</span><textarea data-path="achados.priorityAreas" style="min-height:70px;"></textarea></label>
-            </div>
-            <div class="step-nav"><button class="btn" data-goto="2">← Observação sensorial</button><button class="btn btn-primary" data-goto="4">Próximo: Devolutiva e relatório →</button></div>
-          </section>
-
-          <section class="step-panel" data-step="4">
-            <div class="card">
-              <h2>Relatório terapêutico</h2>
-              <p class="card-desc">Gere um rascunho a partir dos dados preenchidos e ajuste livremente o texto final.</p>
-              <button class="btn btn-accent btn-sm" id="genReportBtn" style="margin-bottom:12px;">✦ Gerar rascunho automático</button>
-              <textarea data-path="documentacao.reportDraft" style="min-height:220px;"></textarea>
-            </div>
-            <div class="card">
-              <h2>Devolutiva para a família</h2>
-              <p class="card-desc">Resumo em linguagem acessível para compartilhar com os responsáveis.</p>
-              <button class="btn btn-accent btn-sm" id="genFamilyBtn" style="margin-bottom:12px;">✦ Gerar rascunho automático</button>
-              <textarea data-path="documentacao.devolutivaFamilia" style="min-height:160px;"></textarea>
-            </div>
-            <div class="card">
-              <h2>Encaminhamentos e recomendações</h2>
-              <textarea data-path="documentacao.encaminhamentos" style="min-height:100px;"></textarea>
-            </div>
-            <div class="step-nav"><button class="btn" data-goto="3">← Achados e hipóteses</button><button class="btn btn-primary" data-goto="5">Próximo: Plano terapêutico →</button></div>
-          </section>
-
-          <section class="step-panel" data-step="5">
-            <div class="card">
-              <h2>Objetivos terapêuticos (SMART)</h2>
-              <div id="goalsContainer"></div>
-              <button class="btn btn-sm" id="addGoalBtn">+ Adicionar objetivo</button>
-            </div>
-            <div class="card">
-              <h2>Programa em casa (home program)</h2>
-              <textarea data-path="plano.homeProgram" placeholder="Sugestões de atividades sensoriais para a rotina familiar"></textarea>
-            </div>
-            <div class="card">
-              <h2>Orientação à escola</h2>
-              <textarea data-path="plano.schoolGuidance" style="min-height:80px;"></textarea>
-            </div>
-            <div class="card">
-              <h2>Frequência recomendada</h2>
-              <div class="grid-2">
-                <label class="field"><span class="field-label">Frequência</span>
-                  <select data-path="plano.frequency">
-                    <option value="">Selecionar</option>
-                    <option value="1x">1x por semana</option>
-                    <option value="2x">2x por semana</option>
-                    <option value="3x">3x por semana</option>
-                    <option value="quinzenal">Quinzenal</option>
-                    <option value="reavaliar">A reavaliar em breve</option>
-                  </select>
-                </label>
-                <label class="field"><span class="field-label">Observações sobre a frequência</span><input type="text" data-path="plano.frequencyNotes"></label>
-              </div>
-            </div>
-            <div class="step-nav"><button class="btn" data-goto="4">← Devolutiva e relatório</button><button class="btn btn-primary" id="finishBtn">🖨️ Gerar relatório final →</button></div>
-          </section>
         </div>
-      </div>
-    </main>
-  </div>
-</div>
+        <nav>
+          <ul class="nav-steps" role="list">
+            <li>
+              <button class="nav-btn active" data-view="view-type">
+                <span class="num">1</span> Tipo de relatório</button>
+              </li>
+              <li>
+                <button class="nav-btn" data-view="view-prof">
+                  <span class="num">2</span> Profissional</button>
+                </li>
+                <li>
+                  <button class="nav-btn" data-view="view-patient">
+                    <span class="num">3</span> Paciente</button>
+                  </li>
+                  <li>
+                    <button class="nav-btn" data-view="view-clinic">
+                      <span class="num">4</span> Registro clínico</button>
+                    </li>
+                    <li>
+                      <button class="nav-btn" data-view="view-instruments">
+                        <span class="num">5</span> Instrumentos</button>
+                      </li>
+                      <li>
+                        <button class="nav-btn" data-view="view-preview">
+                          <span class="num">6</span> Prévia / Edição</button>
+                        </li>
+                      </ul>
+                    </nav>
+                    <div class="sidebar-section">
+                      <h3>Dados locais</h3>
+                      <button class="side-action" id="btnSaveLocal" title="Salva os dados neste navegador. Não use em computadores compartilhados.">💾 Salvar rascunho local</button>
+                      <button class="side-action" id="btnLoadLocal">📂 Carregar rascunho local</button>
+                      <button class="side-action" id="btnClearLocal">🗑 Apagar dados locais</button>
+                    </div>
+                    <div class="sidebar-section">
+                      <h3>Documento</h3>
+                      <button class="side-action" id="btnCopy">📋 Copiar texto</button>
+                      <button class="side-action" id="btnPrint">🖨 Imprimir / PDF</button>
+                      <button class="side-action" id="btnDocx">📄 Exportar Word</button>
+                      <button class="side-action" id="btnNew">✨ Novo relatório</button>
+                    </div>
+                  </aside>
+                  <!-- ==================== MAIN ==================== -->
+                  <main class="main">
+                    <div class="topbar">
+                      <button class="hamburger" id="hamburger" aria-label="Abrir menu">☰</button>
+                      <div>
+                        <h1 id="pageTitle">Tipo de relatório</h1>
+                        <div class="subtitle">Minuta técnica — revise antes de assinar</div>
+                      </div>
+                      <div class="topbar-right"><div id="statusBadge"></div><button class="btn btn-secondary btn-sm" id="btnTheme" type="button" aria-label="Alternar modo escuro" title="Modo escuro">🌙</button></div>
+                    </div>
+                    <!-- ============ VIEW: TIPO ============ -->
+                    <section id="view-type" class="view">
+                      <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <div>
+                          Este sistema gera uma <strong>minuta técnica</strong>. A análise, conclusão e assinatura são de
+                          responsabilidade do terapeuta ocupacional. Dados do paciente não são enviados a serviços externos (somente a exportação Word baixa uma biblioteca da internet). <br><small>Base normativa de referência: Resolução COFFITO nº 382/2010, que trata de atestados, pareceres e laudos periciais do terapeuta ocupacional. Confira sempre a norma vigente no seu CREFITO.</small>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-head" data-toggle>
+                          <h2>Selecione o modelo</h2>
+                          <span class="chev">▾</span>
+                        </div>
+                        <div class="card-body">
+                          <div class="report-types" id="reportTypes">
+                            <button class="type-card" data-type="RI">
+                              <strong>Relatório inicial de avaliação</strong>
+                              <span>Identificação da demanda, histórico, procedimentos, análise e recomendações iniciais.</span>
+                            </button>
+                            <button class="type-card" data-type="RA">
+                              <strong>Relatório de acompanhamento</strong>
+                              <span>Evolução desde a avaliação anterior, intervenções, respostas e ajustes do plano.</span>
+                            </button>
+                            <button class="type-card" data-type="RE">
+                              <strong>Relatório de evolução periódica/anual</strong>
+                              <span>Síntese do período, objetivos trabalhados, resultados e continuidade.</span>
+                            </button>
+                            <button class="type-card" data-type="RR">
+                              <strong>Relatório de reavaliação</strong>
+                              <span>Comparação entre dados de referência e resultados atuais.</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                    <!-- ============ VIEW: PROFISSIONAL ============ -->
+                    <section id="view-prof" class="view hidden">
+                      <div class="alert alert-warn">
+                        <span>⚠️</span>
+                        <div>
+                          Estes dados ficam salvos apenas neste navegador (se você ativar "Salvar rascunho local").
+                          Não os utilize em computadores compartilhados.
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-head" data-toggle>
+                          <h2>Identificação profissional</h2>
+                          <span class="chev">▾</span>
+                        </div>
+                        <div class="card-body">
+                          <div class="grid">
+                            <div class="field">
+                              <label for="profNome">Nome do profissional / clínica</label>
+                              <input type="text" id="profNome" placeholder="Ex.: Dra. Ana Silva — TO" />
+                            </div>
+                            <div class="field">
+                              <label for="profRegistro">Registro profissional <span class="hint">(ex.: CREFITO)</span>
+                            </label>
+                            <input type="text" id="profRegistro" placeholder="CREFITO-3/12345-TO" />
+                          </div>
+                          <div class="field">
+                            <label for="profLocal">Local de atendimento</label>
+                            <input type="text" id="profLocal" placeholder="Clínica / Instituição" />
+                          </div>
+                          <div class="field">
+                            <label for="profContato">Telefone <span class="hint">(DDD + número)</span></label>
+                          <input type="tel" id="profContato" inputmode="tel" maxlength="15" placeholder="(79) 99999-9999" />
+                        </div>
+                        <div class="field">
+              <label for="profCidade">Cidade / UF <span class="hint">(usada na assinatura)</span></label>
+              <input type="text" id="profCidade" placeholder="Aracaju/SE" />
+            </div>
+            <div class="field grid-full">
+              <label for="profLogotipo">Logotipo <span class="hint">(PNG/JPG, até ~200 KB)</span>
+                        </label>
+                        <input type="file" id="profLogotipo" accept="image/*" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ============ VIEW: PACIENTE ============ -->
+              <section id="view-patient" class="view hidden">
+                <div class="card">
+                  <div class="card-head" data-toggle>
+                    <h2>Identificação do paciente</h2>
+                    <span class="chev">▾</span>
+                  </div>
+                  <div class="card-body">
+                    <div class="grid">
+                      <div class="field">
+                        <label for="pacNome">Nome ou código de identificação *</label>
+                        <input type="text" id="pacNome" placeholder="Nome completo ou código" />
+                        <div class="error-msg">Campo obrigatório</div>
+                      </div>
+                      <div class="field">
+                        <label for="pacNascimento">Data de nascimento</label>
+                        <input type="date" id="pacNascimento" />
+                      </div>
+                      <div class="field">
+                        <label for="pacIdade">Idade <span class="hint">(calculada)</span>
+                      </label>
+                      <input type="text" id="pacIdade" readonly placeholder="—" />
+                    </div>
+                    <div class="field">
+                      <label for="pacResponsavel">Responsável legal <span class="hint">(se aplicável)</span>
+                    </label>
+                    <input type="text" id="pacResponsavel" />
+                  </div>
+                  <div class="field">
+                    <label for="pacDataAval">Data da avaliação</label>
+                    <input type="date" id="pacDataAval" />
+                  </div>
+                  <div class="field">
+                    <label for="pacPeriodo">Período de acompanhamento</label>
+                    <input type="text" id="pacPeriodo" placeholder="Ex.: mar/2024 – out/2024" />
+                  </div>
+                  <div class="field">
+                    <label for="pacEncaminhante">Encaminhante</label>
+                    <input type="text" id="pacEncaminhante" />
+                  </div>
+                  <div class="field">
+                    <label for="pacMotivo">Motivo do encaminhamento</label>
+                    <input type="text" id="pacMotivo" />
+                  </div>
+                  <div class="field grid-full">
+                    <label for="pacDemanda">Demanda principal</label>
+                    <textarea id="pacDemanda" placeholder="Descreva a demanda que motivou o atendimento...">
+                    </textarea>
+                  </div>
+                  <div class="field grid-full">
+                    <label for="pacObjetivo">Objetivo do documento</label>
+                    <textarea id="pacObjetivo" placeholder="Ex.: subsidiar encaminhamento, compor processo, documentar evolução...">
+                    </textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- ============ VIEW: CLÍNICO ============ -->
+          <section id="view-clinic" class="view hidden">
+            <div class="alert alert-info">
+              <span>💡</span>
+              <div>Escreva com suas próprias palavras. Ao gerar a minuta, o sistema ajusta pontuação e troca expressões coloquiais por termos técnicos equivalentes (ex.: “precisa de ajuda” → “necessita de auxílio”), sem alterar o sentido; trechos entre aspas são mantidos como escritos. Revise sempre.
+                Deixe em branco o que não se aplica ao caso.</div>
+              </div>
+              <div id="clinicCards">
+              </div>
+            </section>
+            <!-- ============ VIEW: INSTRUMENTOS ============ -->
+            <section id="view-instruments" class="view hidden">
+              <div class="alert alert-warn">
+                <span>⚠️</span>
+                <div>
+                  Registre apenas instrumentos aplicados legitimamente. O sistema <strong>não calcula escores nem
+                  atribui normas</strong>. Insira os resultados obtidos na aplicação real.
+                </div>
+              </div>
+              <div id="instrumentsList">
+              </div>
+              <button class="btn btn-secondary" id="btnAddInstrument">+ Adicionar instrumento</button>
+            </section>
+            <!-- ============ VIEW: PRÉVIA ============ -->
+            <section id="view-preview" class="view hidden">
+              <div class="preview-toolbar no-print">
+                <button class="btn btn-primary btn-sm" id="btnGenerate">⚙️ Gerar / Regenerar minuta</button>
+                <button class="btn btn-secondary btn-sm" id="btnBackToForm">← Voltar ao formulário</button>
+        <label class="text-sm" style="display:flex;gap:6px;align-items:center;"><input type="checkbox" id="chkTecnico" checked> Vocabulário técnico</label>
+                <div class="spacer">
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnCopy2">📋 Copiar</button>
+                <button class="btn btn-secondary btn-sm" id="btnDocx2">📄 Word</button>
+                <button class="btn btn-secondary btn-sm" id="btnPrint2">🖨 Imprimir / PDF</button>
+              </div>
+              <div class="alert alert-warn no-print" id="validationBox" hidden>
+              </div>
+<div class="alert alert-info no-print" id="termosBox" hidden></div>
+              <div class="a4-wrap">
+                <article class="a4" id="docA4">
+                  <div class="doc-placeholder text-muted text-sm">
+                    Clique em <strong>Gerar / Regenerar minuta</strong> para produzir o documento.
+                  </div>
+                </article>
+              </div>
+            </section>
+            <!-- ============ AÇÕES GLOBAIS ============ -->
+            <div class="actions-row no-print">
+              <button class="btn btn-secondary" id="btnPrevView">← Etapa anterior</button>
+              <button class="btn btn-primary" id="btnNextView">Próxima etapa →</button>
+              <div class="spacer">
+              </div>
+              <button class="btn btn-ghost" id="btnNew2">Novo relatório</button>
+            </div>
+          </main>
+        </div>
+        <!-- ==================== BIBLIOTECA DOCX (sob demanda) ==================== -->
+        <script>
+  // Carregamento sob demanda — só quando o usuário pedir exportação Word
+  let docxLoaded = false;
+  function loadDocxLib(){
+    return new Promise((resolve, reject)=>{
+      if (docxLoaded && window.docx) return resolve(window.docx);
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
+      s.onload = ()=>{ docxLoaded = true; resolve(window.docx); };
+      s.onerror = ()=> reject(new Error('Falha ao carregar biblioteca DOCX'));
+      document.head.appendChild(s);
+    });
+  }
+</script>
+        <!-- ==================== APLICAÇÃO ==================== -->
+        <script>
+(() => {
+'use strict';
 
-<div class="modal-overlay no-print" id="settingsModal">
-  <div class="modal">
-    <h2>Configurações da clínica</h2>
-    <label class="field"><span class="field-label">Nome da clínica</span><input type="text" id="cfgClinicName"></label>
-    <label class="field"><span class="field-label">Nome da terapeuta responsável</span><input type="text" id="cfgTherapistName"></label>
-    <label class="field"><span class="field-label">Registro profissional (CREFITO)</span><input type="text" id="cfgCredential"></label>
-    <div class="modal-actions">
-      <button class="btn" id="cfgCancel">Cancelar</button>
-      <button class="btn btn-primary" id="cfgSave">Salvar</button>
-    </div>
-  </div>
-</div>
+/* ============================================================
+   CONSTANTES
+   ============================================================ */
 
-<div class="modal-overlay no-print" id="newPatientModal">
-  <div class="modal">
-    <h2>Novo paciente</h2>
-    <label class="field"><span class="field-label">Nome completo da criança</span><input type="text" id="npName"></label>
-    <label class="field"><span class="field-label">Data de nascimento</span><input type="date" id="npBirth"></label>
-    <div class="modal-actions">
-      <button class="btn" id="npCancel">Cancelar</button>
-      <button class="btn btn-primary" id="npCreate">Criar paciente</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-<div id="print-report"></div>
-
-<script>
-(function(){
-"use strict";
-
-/* ---------------- Domain data ---------------- */
-const SCALE_LABELS = ["Nunca","Raramente","Às vezes","Frequentemente","Sempre"];
-
-const DOMAINS = [
-  {key:"tatil", label:"Tátil", color:"var(--dom-tatil)", items:[
-    "Incomoda-se com etiquetas, costuras ou texturas de roupas",
-    "Evita ou resiste a ter as mãos sujas (tinta, areia, massinha, comida)",
-    "Reage de forma intensa a toques leves e inesperados",
-    "Busca tocar objetos, texturas ou pessoas com frequência incomum",
-    "Tem dificuldade em identificar objetos pelo tato sem olhar"
-  ]},
-  {key:"vestibular", label:"Vestibular", color:"var(--dom-vestibular)", items:[
-    "Evita brinquedos de balanço, escorregador ou parque",
-    "Gira, balança ou se movimenta sem parecer ficar tonto(a)",
-    "Demonstra insegurança gravitacional (medo de ter os pés fora do chão)",
-    "Tem dificuldade de manter o equilíbrio em superfícies instáveis",
-    "Busca atividades de movimento intenso (pular, girar, balançar) o tempo todo"
-  ]},
-  {key:"proprioceptivo", label:"Proprioceptivo", color:"var(--dom-proprioceptivo)", items:[
-    "Esbarra ou colide em objetos e pessoas com frequência",
-    "Usa mais força do que o necessário em atividades (bater portas, apertar objetos)",
-    "Busca empurrar, puxar ou carregar objetos pesados",
-    "Tem dificuldade em graduar a força ao escrever, tocar ou manusear objetos",
-    "Demonstra necessidade de pressão profunda para se acalmar (abraços apertados, cobertores pesados)"
-  ]},
-  {key:"auditivo", label:"Auditivo", color:"var(--dom-auditivo)", items:[
-    "Cobre os ouvidos ou se incomoda com sons comuns (aspirador, sirene, choro)",
-    "Não parece perceber quando é chamado(a) pelo nome",
-    "Distrai-se facilmente com sons de fundo em ambientes com estímulo",
-    "Assusta-se com sons repentinos mais do que o esperado para a idade",
-    "Faz sons repetidamente ou busca ambientes ruidosos"
-  ]},
-  {key:"visual", label:"Visual", color:"var(--dom-visual)", items:[
-    "Incomoda-se com luzes fortes ou ambientes muito iluminados",
-    "Fica fascinado(a) observando luzes, ventiladores ou objetos giratórios",
-    "Tem dificuldade em encontrar objetos em ambientes visualmente carregados",
-    "Evita contato visual ou demonstra desconforto ao olhar diretamente",
-    "Prefere organizar ou alinhar objetos visualmente antes de brincar"
-  ]},
-  {key:"oral", label:"Olfativo e gustativo", color:"var(--dom-oral)", items:[
-    "Recusa alimentos por causa da textura, cheiro ou aparência",
-    "Cheira objetos, pessoas ou alimentos antes de interagir com eles",
-    "Demonstra forte reação a cheiros que outras pessoas não notam",
-    "Leva objetos não alimentares à boca com frequência incomum para a idade",
-    "Prefere alimentos com sabores ou temperaturas muito específicas"
-  ]},
-  {key:"interocepcao", label:"Interocepção", color:"var(--dom-interocepcao)", items:[
-    "Tem dificuldade em perceber fome, sede ou saciedade",
-    "Não demonstra sinais claros de precisar ir ao banheiro",
-    "Parece não perceber quando está com frio, calor ou dor",
-    "Tem dificuldade em identificar e nomear emoções a partir de sensações corporais",
-    "Continua uma atividade mesmo demonstrando sinais de cansaço extremo"
-  ]},
-  {key:"modulacao", label:"Modulação e autorregulação", color:"var(--dom-modulacao)", items:[
-    "Tem dificuldade em se acalmar após ficar agitado(a)",
-    "Apresenta oscilações rápidas de humor sem causa aparente",
-    "Demonstra sobrecarga (crise, choro, fuga) em ambientes muito estimulantes",
-    "Precisa de mais tempo que o esperado para se ajustar a transições",
-    "Utiliza estratégias próprias para se autorregular (balançar, apertar objetos, isolar-se)"
-  ]},
-  {key:"praxia", label:"Práxis e planejamento motor", color:"var(--dom-praxia)", items:[
-    "Tem dificuldade em aprender sequências motoras novas (pular corda, andar de bicicleta)",
-    "Evita brincadeiras ou jogos com regras e sequências motoras",
-    "Demonstra desorganização ao se vestir ou realizar tarefas com várias etapas",
-    "Precisa de demonstração repetida para executar um novo movimento",
-    "Apresenta dificuldade em coordenar os dois lados do corpo (cortar com tesoura, pular alternando pés)"
-  ]}
-];
-
-const PATTERN_OPTIONS = [
-  {value:"", label:"Selecionar"},
-  {value:"sem_alteracao", label:"Sem alterações significativas"},
-  {value:"hiper", label:"Hiper-responsividade (defensividade)"},
-  {value:"hipo", label:"Hipo-responsividade (baixo registro)"},
-  {value:"busca", label:"Busca sensorial"},
-  {value:"discriminacao", label:"Dificuldade de discriminação/percepção"},
-  {value:"investigar", label:"A investigar melhor"}
-];
-const PATTERN_LABELS = Object.fromEntries(PATTERN_OPTIONS.map(o=>[o.value,o.label]));
-const PATTERN_FAMILY_PHRASE = {
-  "": "ainda não avaliado(a) neste domínio",
-  sem_alteracao: "sem sinais que chamem atenção",
-  hiper: "maior sensibilidade a estímulos",
-  hipo: "menor percepção aos estímulos",
-  busca: "busca ativa por estímulos intensos",
-  discriminacao: "dificuldade em diferenciar e localizar estímulos",
-  investigar: "um ponto que ainda vamos investigar melhor"
+const TIPOS = {
+  RI: { nome:'Relatório Inicial de Avaliação', secoes:[1,2,3,4,5,6,7,8,9,10,11,13,14,15] },
+  RA: { nome:'Relatório de Acompanhamento Terapêutico', secoes:[1,2,3,5,6,9,11,12,13,14,15] },
+  RE: { nome:'Relatório de Evolução Periódica/Anual', secoes:[1,2,3,5,6,8,9,11,12,13,14,15] },
+  RR: { nome:'Relatório de Reavaliação', secoes:[1,2,3,4,5,6,7,8,9,10,13,14,15] }
 };
 
-const GOAL_AREAS = ["Autorregulação","Coordenação motora","Participação social","Atividades de vida diária","Processamento tátil","Processamento vestibular/proprioceptivo","Planejamento motor (práxis)","Atenção e engajamento"];
+// Seções do documento (ordem fixa) — id numérico conforme especificação
+const SECOES = {
+  1:{titulo:'Cabeçalho institucional e identificação profissional'},
+  2:{titulo:'Identificação do paciente'},
+  3:{titulo:'Finalidade do relatório'},
+  4:{titulo:'Descrição da demanda'},
+  5:{titulo:'Histórico e informações contextuais relevantes'},
+  6:{titulo:'Procedimentos e instrumentos utilizados'},
+  7:{titulo:'Observações clínicas e análise do desempenho ocupacional'},
+  8:{titulo:'Resultados das avaliações'},
+  9:{titulo:'Potencialidades e dificuldades identificadas'},
+  10:{titulo:'Análise dos impactos funcionais e da participação ocupacional'},
+  11:{titulo:'Objetivos e intervenções terapêuticas'},
+  12:{titulo:'Evolução clínica'},
+  13:{titulo:'Considerações finais'},
+  14:{titulo:'Recomendações e encaminhamentos'},
+  15:{titulo:'Local, data e identificação do profissional responsável'}
+};
 
-/* ---------------- State ---------------- */
-let settings = {clinicName:"", therapistName:"", credential:""};
-let patients = [];
-let currentPatient = null;
-let currentStep = 1;
-let saveTimer = null;
-let dbNS = null;
+// Campos clínicos — chave, label, dica, seção do documento em que entram
+const CAMPOS_CLINICOS = [
+  { k:'historicoOcupacional', label:'Histórico ocupacional e contexto de vida', sec:5 },
+  { k:'anamnese',             label:'Informações relevantes da anamnese',      sec:5, prefixo:'Segundo relato do paciente/responsável, ' },
+  { k:'rotinaInteresses',     label:'Rotina, interesses e preferências',       sec:5 },
+  { k:'avds',                 label:'Atividades de vida diária (AVDs)',        sec:7 },
+  { k:'aivds',                label:'Atividades instrumentais de vida diária (AIVDs)', sec:7 },
+  { k:'participacaoSocial',   label:'Participação social e escolar',           sec:7 },
+  { k:'motorCoordenacao',     label:'Desempenho motor e coordenação',          sec:7, prefixo:'À observação clínica, ' },
+  { k:'sensorial',            label:'Processamento sensorial',                 sec:7, prefixo:'Quanto ao processamento sensorial, ' },
+  { k:'cognitivoExecutivo',   label:'Funções cognitivas e executivas',         sec:7 },
+  { k:'comunicacao',          label:'Comunicação, interação e participação',   sec:7 },
+  { k:'brincarLazerTrabalho', label:'Brincar, lazer, educação, trabalho e descanso', sec:7 },
+  { k:'barreirasFacilitadores',label:'Barreiras ambientais e facilitadores',   sec:10 },
+  { k:'potencialidades',      label:'Potencialidades, interesses e habilidades', sec:9 },
+  { k:'dificuldades',         label:'Dificuldades funcionais observadas',      sec:9 },
+  { k:'objetivos',            label:'Objetivos terapêuticos',                  sec:11 },
+  { k:'intervencoes',         label:'Intervenções realizadas e resposta do paciente', sec:11 },
+  { k:'evolucao',             label:'Evolução clínica no período (acompanhamento/evolução)', sec:12 },
+  { k:'consideracoesFinais',  label:'Considerações finais / conclusão do terapeuta', sec:13 },
+  { k:'recomendacoes',        label:'Recomendações e encaminhamentos', sec:14 }
+];
 
-function emptyChecklist(){
-  const c = {};
-  DOMAINS.forEach(d=>{ c[d.key]=[0,0,0,0,0]; });
-  return c;
+/* ============================================================
+   ESTADO
+   ============================================================ */
+
+const state = {
+  tipo: null,
+  profissional: { nome:'', registro:'', local:'', contato:'', logotipoDataUrl:'' },
+  paciente: {},
+  clinico: {},
+  instrumentos: [],
+  relatorio: { secoes: [] } // preenchido após gerar
+};
+
+/* ============================================================
+   UTILITÁRIOS
+   ============================================================ */
+
+const $  = (sel, ctx=document) => ctx.querySelector(sel);
+const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+const escapeHtml = (s='') => s
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+function maskTel(v){
+  const d = String(v).replace(/\D/g,'').slice(0,11);
+  if (!d) return '';
+  if (d.length <= 2) return '(' + d;
+  if (d.length <= 6) return `(${d.slice(0,2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
 }
-function emptyDomainPatterns(){
-  const p = {};
-  DOMAINS.forEach(d=>{ p[d.key]={pattern:"",note:""}; });
-  return p;
+
+function calcIdade(dataISO, refISO){
+  if (!dataISO) return '';
+  const nasc = new Date(dataISO + 'T00:00:00');
+  if (isNaN(nasc.getTime())) return '';
+  let ref = refISO ? new Date(refISO + 'T00:00:00') : new Date();
+  if (isNaN(ref.getTime())) ref = new Date();
+  let meses = (ref.getFullYear()-nasc.getFullYear())*12 + ref.getMonth()-nasc.getMonth();
+  if (ref.getDate() < nasc.getDate()) meses--;
+  if (meses < 0 || meses > 1560) return '';
+  const a = Math.floor(meses/12), m = meses % 12;
+  const pl = (n,s,p) => `${n} ${n===1?s:p}`;
+  if (a < 1) return pl(m,'mês','meses');
+  if (a >= 12 || m === 0) return pl(a,'ano','anos');
+  return `${pl(a,'ano','anos')} e ${pl(m,'mês','meses')}`;
 }
-function emptyPatient(){
+
+function formatDateBR(iso){
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('pt-BR');
+}
+
+function todayISO(){
+  const d = new Date();
+  const z = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
+}
+
+function todayLongBR(){
+  return new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+const CATALOGO_INSTR = [{"sigla": "CIF", "nome": "Classificação Internacional de Funcionalidade, Incapacidade e Saúde", "desc": "Ficha de mapeamento clínico com qualificadores 0-4, Índice CIF de preservação funcional e questionário WHODAS 2.0 (36 itens) para Atividades e Participação.", "tipo": "Modelo / Classificação", "publico": "Qualquer idade", "acesso": "Gratuito"}, {"sigla": "DSM-5-TR", "nome": "Manual Diagnóstico e Estatístico de Transtornos Mentais", "desc": "Matriz de impacto funcional + Índice de Severidade Diagnóstica (ISD).", "tipo": "Classificação Diagnóstica", "publico": "Qualquer idade", "acesso": "Comercial"}, {"sigla": "PEO", "nome": "Modelo Pessoa-Ambiente-Ocupação", "desc": "Ficha de avaliação do encaixe ocupacional + Índice de Encaixe Ocupacional (IEO).", "tipo": "Modelo Teórico", "publico": "Qualquer idade", "acesso": "Gratuito"}, {"sigla": "M-CHAT-R/F", "nome": "Modified Checklist for Autism in Toddlers – Revised with Follow-Up", "desc": "Triagem precoce de sinais de TEA em crianças de 16 a 30 meses.", "tipo": "Triagem", "publico": "Infantil (16–30 meses)", "acesso": "Gratuito"}, {"sigla": "Portage", "nome": "Guia Portage de Educação Pré-Escolar", "desc": "Folha completa do Guia Portage (535 itens, 5 áreas, 0 a 6 anos). Cálculo do QDP e objetivos prioritários.", "tipo": "Inventário de Desenvolvimento", "publico": "Infantil (0–6 anos)", "acesso": "Verificar direitos"}, {"sigla": "PEDI / PEDI-CAT", "nome": "Pediatric Evaluation of Disability Inventory", "desc": "Questionários funcionais inspirados no PEDI-CAT (modelo autoral): Atividades Diárias, Mobilidade, Social/Cognitivo e Responsabilidade. Escore médio por domínio.", "tipo": "Inventário Pediátrico", "publico": "Infantil e juvenil (modelo autoral: 2–12 anos)", "acesso": "Comercial"}, {"sigla": "DCDQ-Brasil", "nome": "Developmental Coordination Disorder Questionnaire", "desc": "Triagem de TDC em crianças de 5 a 15 anos. Respondido pelos pais.", "tipo": "Triagem / Parental", "publico": "Escolar (5–15 anos)", "acesso": "Verificar direitos"}, {"sigla": "Knox", "nome": "Escala Lúdica Pré-Escolar de Knox – Revisada", "desc": "Avaliação do comportamento lúdico em 4 dimensões. Idade do Brincar e QB.", "tipo": "Observacional / Infantil", "publico": "Infantil (0–6 anos)", "acesso": "Verificar direitos"}, {"sigla": "Sensory Profile 2", "nome": "Perfil Sensorial 2", "desc": "Avaliação do processamento sensorial em 4 quadrantes.", "tipo": "Questionário / Sensorial", "publico": "Infantil e escolar", "acesso": "Comercial"}, {"sigla": "MOHOST", "nome": "Model of Human Occupation Screening Tool", "desc": "Triagem de participação ocupacional em 6 setores. Índice MOHOST.", "tipo": "Triagem / MOHO", "publico": "Adultos", "acesso": "Verificar direitos"}, {"sigla": "OPHI-II", "nome": "Occupational Performance History Interview – II", "desc": "Entrevista sobre história ocupacional. Escalas de Identidade, Competência e Ambiente.", "tipo": "Entrevista", "publico": "Adolescentes e adultos", "acesso": "Verificar direitos"}, {"sigla": "OCAIRS", "nome": "Occupational Circumstances Assessment Interview and Rating Scale", "desc": "Entrevista e escala com 12 itens. Índice de Suporte Ocupacional (ISO).", "tipo": "Entrevista / Escala", "publico": "Adolescentes e adultos", "acesso": "Verificar direitos"}, {"sigla": "VQ", "nome": "Questionário de Volição (Volitional Questionnaire)", "desc": "Observação da motivação/volição. Determina estágio volitivo.", "tipo": "Observacional", "publico": "Adultos", "acesso": "Verificar direitos"}, {"sigla": "Role Checklist", "nome": "Lista de Identificação de Papéis Ocupacionais", "desc": "Autoavaliação de 10 papéis ao longo do tempo. Cálculo do ISP.", "tipo": "Autoavaliação", "publico": "Adolescentes, adultos e idosos", "acesso": "Verificar direitos"}, {"sigla": "Interest Checklist", "nome": "Lista de Interesses Modificada", "desc": "Mapeia interesses e participação em atividades. IAL.", "tipo": "Autoavaliação", "publico": "Adolescentes e adultos", "acesso": "Verificar direitos"}, {"sigla": "COPM", "nome": "Medida Canadense de Desempenho Ocupacional", "desc": "Medida centrada no cliente. Identifica problemas e mede mudança. Médias desempenho/satisfação.", "tipo": "Medida Centrada no Cliente", "publico": "Qualquer idade", "acesso": "Licenciado"}, {"sigla": "AMPS", "nome": "Assessment of Motor and Process Skills", "desc": "Observação padronizada de AVDs. Registro de resultados.", "tipo": "Observacional", "publico": "2 a mais de 65 anos", "acesso": "Licenciado (com certificação)"}, {"sigla": "AusTOMs-OT", "nome": "Australian Therapy Outcome Measures", "desc": "Medida de resultado em 4 domínios. Ganho terapêutico (Δ).", "tipo": "Medida de Resultado", "publico": "Qualquer idade", "acesso": "Gratuito"}];
+/*TEC-INI*/
+const OPC = { tecnico:true };
+const LOGTEC = new Map();
+const LA = '(?=\\s+(?:para|de|do|da|dos|das|no|na|nos|nas|em|ao|à|e|ou|com|durante)\\b|[,.;:!?)]|$)';
+const R = (src, f='gi') => new RegExp(src, f);
+// Substituições conservadoras: só sinônimos diretos; nada que mude intensidade, negação ou sentido.
+const TERMOS = [
+  /* contexto infantil: só equivalências diretas; hipóteses diagnósticas ficam por conta do terapeuta */
+  [/\bnão consegue se vestir sozinh[oa]\b/gi, 'apresenta dependência na AVD de vestuário'],
+  [/\bnão ajuda em casa\b/gi, 'não participa das tarefas domésticas (AIVDs)'],
+  [/\bnão para quiet[oa]\b/gi, 'apresenta inquietação motora'],
+  [/(^|\s)é muito agitad[oa]\b/gi, '$1apresenta agitação motora intensa'],
+  [/(^|\s)é agitad[oa]\b/gi, '$1apresenta agitação motora'],
+  [/\bnão consegue se concentrar\b/gi, 'não consegue manter a concentração'],
+  [/\bnão presta atenção (?:na|nas) aulas?\b/gi, 'não mantém a atenção durante as aulas'],
+  [/\bnão consegue esperar\b/gi, 'não consegue aguardar'],
+  [/\bnão sabe usar (?:a )?tesoura\b/gi, 'não apresenta habilidade para manusear tesoura'],
+  [/\bsegurar (?:o |a )?(lápis|caneta|giz)\b/gi, 'realizar a preensão do $1'],
+  [/\bsegura (?:o |a )?(lápis|caneta|giz)\b/gi, 'realiza a preensão do $1'],
+  [/\bletra feia\b/gi, 'dificuldade na legibilidade da escrita manual'],
+  [/\bmolha a cama\b/gi, 'apresenta episódios de enurese noturna'],
+  [/\bnão come direito\b/gi, 'apresenta dificuldade no processo de alimentação'],
+  [/(^|\s)(?:é |está )?atrasad[oa] no desenvolvimento\b/gi, '$1apresenta atraso no desenvolvimento'],
+  [R('\\bnão fala(?=[,.;:!?)]|$)'), 'não oraliza'],
+  [/\bnão entende o que (?:falam|dizem|lhe falam)\b/gi, 'não demonstra compreensão da linguagem oral'],
+  [/(^|\s)é desastrad[oa]\b/gi, '$1apresenta falta de destreza motora'],
+  [/\bnão gosta de (?:barulhos?|ruídos?) e de (?:certas |algumas )?texturas\b/gi, 'demonstra desagrado a ruídos e a determinadas texturas'],
+  [/\bnão gosta de (?:barulhos?|ruídos?)\b/gi, 'demonstra desagrado a ruídos'],
+  [/\bnão gosta de (?:certas |algumas )?texturas\b/gi, 'demonstra desagrado a determinadas texturas'],
+  [/\bnão gosta de balançar\b/gi, 'demonstra desagrado a atividades de balanço'],
+  [/\bbate em outras crianças\b/gi, 'apresenta comportamento de agressão física a outras crianças'],
+  [/\bbate nos colegas\b/gi, 'apresenta comportamento de agressão física a colegas'],
+  [/\bnão interage com (?:outras |as )?crianças\b/gi, 'não apresenta interação com pares'],
+  [/\bnão obedece\b/gi, 'não segue instruções'],
+  [/\bnão tem noção do perigo\b/gi, 'apresenta ausência de percepção de risco'],
+  [/\bnão consegue fazer amigos\b/gi, 'não consegue estabelecer vínculos de amizade'],
+  [/\bchora por tudo\b/gi, 'apresenta choro frequente diante de múltiplas situações'],
+  [/\bnão dorme bem\b/gi, 'apresenta alteração no padrão de sono'],
+  [/\bbrincar de faz de conta\b/gi, 'brincar simbólico (faz de conta)'],
+  [/\bbrinca de faz de conta\b/gi, 'realiza brincadeira simbólica (faz de conta)'],
+  [/\bbrincar com (blocos|peças de montar|lego)\b/gi, 'brincar construtivo com $1'],
+  [/\bajuda (física|verbal|parcial|total|gestual)\b/gi, a => 'auxílio ' + ({física:'físico',verbal:'verbal',parcial:'parcial',total:'total',gestual:'gestual'})[a[1].toLowerCase()]],
+  [R('\\b(precisa|precisam) de ajuda'+LA), a => (a[1].toLowerCase()==='precisa' ? 'necessita' : 'necessitam') + ' de auxílio'],
+  [R('\\b(depende|dependem) de ajuda'+LA), '$1 de auxílio'],
+  [R('\\b(com|sem) ajuda'+LA), '$1 auxílio'],
+  [/\b(precisa|precisam) de\b/gi, a => (a[1].toLowerCase()==='precisa' ? 'necessita' : 'necessitam') + ' de'],
+  [/\b(tem|têm) (dificuldades?|alterações?|déficits?)\b/gi, a => (a[1].toLowerCase()==='tem' ? 'apresenta' : 'apresentam') + ' ' + a[2]],
+  [/\bcai (muito|com frequência|bastante)\b/gi, 'apresenta quedas frequentes'],
+  [/\bescovar (os )?dentes\b/gi, 'realizar a higiene bucal'],
+  [/\btomar banho\b/gi, 'realizar a higiene corporal (banho)'],
+  [/\bir ao banheiro\b/gi, 'realizar o toalete'],
+  [/\bcomer sozinh[oa]\b/gi, 'alimentar-se de forma independente'],
+  [/\b(se veste|veste-se) sozinh[oa]\b/gi, '$1 de forma independente'],
+  [/\bcome sozinh[oa]\b/gi, 'alimenta-se de forma independente'],
+  [/\bvestir(?:-se)? sozinh[oa]\b/gi, 'vestir-se de forma independente'],
+  [/\busar (?:os )?talheres\b/gi, 'manusear talheres'],
+  [/\bdia a dia\b/gi, 'cotidiano'],
+  [/\bna escola\b/gi, 'no contexto escolar'],
+  [/\bem casa\b/gi, 'no contexto domiciliar'],
+  [/\bbarulhos?\b/gi, a => /s$/i.test(a[0]) ? 'ruídos' : 'ruído'],
+  [/\b(não )?(gosta|gostam) de\b/gi, a => a[1] ? a[0] : (a[2].toLowerCase()==='gosta' ? 'demonstra' : 'demonstram') + ' interesse por'],
+  [R('\\bmelhorou(?! muito)'+LA), 'apresentou evolução positiva'],
+  [R('\\bpiorou(?! muito)'+LA), 'apresentou piora'],
+  [/\b(dificuldades?) (?:para|em|de) comer\b/gi, '$1 na alimentação'],
+  [/\b(dificuldades?) (?:para|em|de) dormir\b/gi, '$1 no sono'],
+  [/\b(dificuldades?) (?:para|em|de) trabalhar\b/gi, '$1 no desempenho laboral'],
+  [/\b(dificuldades?) (?:para|em|de) estudar\b/gi, '$1 nas atividades educacionais'],
+  [/\b(para|em|de) (?:andar|caminhar)\b/gi, '$1 deambular'],
+  [/\bse vestir\b/gi, 'vestir-se'],
+  [/\busar o banheiro\b/gi, 'realizar o toalete'],
+  [/\bsair com (?:os )?amigos\b/gi, 'participar de atividades sociais com amigos'],
+  [/\bfaz sozinh[oa]\b/gi, 'realiza de forma independente'],
+  [/\bfazer sozinh[oa]\b/gi, 'realizar de forma independente'],
+  [/\busa (bengala|andador|muletas?|cadeira de rodas|órtese|prótese)\b/gi, 'faz uso de $1'],
+  [/\bnão enxerga bem\b/gi, 'apresenta déficit visual'],
+  [/\bnão ouve bem\b/gi, 'apresenta déficit auditivo'],
+  [/\bcomeçou a\b/gi, 'iniciou a']
+];
+function tecnizar(texto){
+  if (!OPC.tecnico || !texto) return texto;
+  return texto.split(/(["“][^"”]*["”])/).map((seg, i) => i % 2 ? seg : TERMOS.reduce((t, [re, tpl]) =>
+    t.replace(re, (...a) => {
+      const m = a[0];
+      let out = typeof tpl === 'function' ? tpl(a) : tpl.replace(/\$(\d)/g, (_, k) => a[k] || '');
+      if (out === m) return m;
+      if (/^\s*[A-ZÀ-Ý]/.test(m)) out = out.replace(/^(\s*)(\S)/, (_, w, c) => w + c.toUpperCase());
+      const key = m.trim().toLowerCase() + ' → ' + out.trim().toLowerCase();
+      LOGTEC.set(key, (LOGTEC.get(key) || 0) + 1);
+      return out;
+    }), seg)).join('');
+}
+function renderTermos(){
+  const box = $('#termosBox');
+  if (!OPC.tecnico || !LOGTEC.size){ box.hidden = true; return; }
+  const itens = [...LOGTEC].map(([k, n]) => escapeHtml(k) + (n > 1 ? ` (${n}×)` : '')).join('; ');
+  box.hidden = false;
+  box.innerHTML = `<span>🔎</span><div><strong>Termos ajustados automaticamente — confira o sentido:</strong> ${itens}. Trechos entre aspas foram mantidos como escritos.</div>`;
+}
+/*TEC-FIM*/
+
+// Normaliza texto livre: trim, espaços múltiplos, capitaliza início
+function normalizeText(t=''){
+  t = t.replace(/\s+/g,' ').trim();
+  if (!t) return '';
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+// Divide um bloco de texto em parágrafos (por linha em branco ou quebra dupla)
+function splitParagraphs(t=''){
+  return t
+    .split(/\n\s*\n|\n/)
+    .map(p => p.trim())
+    .filter(Boolean);
+}
+
+// Aplica prefixo de contexto e garante pontuação final
+function comporParagrafo(texto, prefixo=''){
+  let t = normalizeText(tecnizar(texto));
+  if (!t) return '';
+  // Remove pontuação final se houver, para juntarmos coerência
+  if (prefixo){
+    // Prefixos terminam com ", " — o texto seguinte deve começar minúsculo
+    if (!/^[A-ZÀ-Ý]{2,}/.test(t)) t = t.charAt(0).toLowerCase() + t.slice(1);
+    t = prefixo + t;
+  }
+  if (!/[.!?]$/.test(t)) t += '.';
+  return t;
+}
+
+function htmlParagraphs(paragrafos, tec){
+  if (!paragrafos.length) return '';
+  return paragrafos.map(p => `<p>${escapeHtml(tec === false ? p : comporParagrafo(p))}</p>`).join('');
+}
+
+/* ============================================================
+   UI — NAVEGAÇÃO
+   ============================================================ */
+
+const VIEWS = ['view-type','view-prof','view-patient','view-clinic','view-instruments','view-preview'];
+const VIEW_TITLES = {
+  'view-type':'Tipo de relatório',
+  'view-prof':'Profissional',
+  'view-patient':'Paciente',
+  'view-clinic':'Registro clínico',
+  'view-instruments':'Instrumentos de avaliação',
+  'view-preview':'Prévia e edição'
+};
+let currentView = 'view-type';
+
+function showView(id){
+  if (!VIEWS.includes(id)) return;
+  currentView = id;
+  VIEWS.forEach(v => $('#' + v).classList.toggle('hidden', v !== id));
+  $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === id));
+  $('#pageTitle').textContent = VIEW_TITLES[id];
+  $('#btnPrevView').style.visibility = id === VIEWS[0] ? 'hidden' : 'visible';
+  $('#btnNextView').style.visibility = id === VIEWS[VIEWS.length-1] ? 'hidden' : 'visible';
+  window.scrollTo({ top:0, behavior:'smooth' });
+  closeSidebarMobile();
+  // Se for prévia, rolar direto
+  if (id === 'view-preview') {
+    // nada
+  }
+}
+
+function nextView(){
+  const i = VIEWS.indexOf(currentView);
+  if (i < VIEWS.length - 1) showView(VIEWS[i+1]);
+}
+function prevView(){
+  const i = VIEWS.indexOf(currentView);
+  if (i > 0) showView(VIEWS[i-1]);
+}
+
+$$('.nav-btn').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+$('#btnNextView').addEventListener('click', nextView);
+$('#btnPrevView').addEventListener('click', prevView);
+
+// Toggle sidebar mobile
+const sidebar = $('#sidebar');
+const backdrop = $('#sidebarBackdrop');
+$('#hamburger').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  backdrop.classList.toggle('open');
+});
+backdrop.addEventListener('click', closeSidebarMobile);
+function closeSidebarMobile(){
+  sidebar.classList.remove('open');
+  backdrop.classList.remove('open');
+}
+
+// Cards colapsáveis
+document.addEventListener('click', (e) => {
+  const head = e.target.closest('[data-toggle]');
+  if (head && head.parentElement?.classList.contains('card')){
+    head.parentElement.classList.toggle('collapsed');
+  }
+});
+
+/* ============================================================
+   UI — TIPO DE RELATÓRIO
+   ============================================================ */
+
+$$('#reportTypes .type-card').forEach(card => {
+  card.addEventListener('click', () => {
+    $$('#reportTypes .type-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.tipo = card.dataset.type;
+    updateStatus();
+    // Auto-avançar após seleção
+    setTimeout(() => showView('view-prof'), 180);
+  });
+});
+
+/* ============================================================
+   UI — CAMPOS CLÍNICOS (construção dinâmica)
+   ============================================================ */
+
+function buildClinicCards(){
+  const container = $('#clinicCards');
+  container.innerHTML = '';
+  CAMPOS_CLINICOS.forEach(({k, label}) => {
+    const card = document.createElement('div');
+    card.className = 'card collapsed';
+    card.innerHTML = `
+      <div class="card-head" data-toggle>
+        <h2>${escapeHtml(label)}</h2>
+        <span class="chev">▾</span>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label for="cli_${k}" class="hidden">${escapeHtml(label)}</label>
+          <textarea id="cli_${k}" data-clinic="${k}" rows="4"
+            placeholder="Escreva com suas próprias palavras..."></textarea>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function collectClinic(){
+  $$('[data-clinic]').forEach(el => {
+    state.clinico[el.dataset.clinic] = el.value.trim();
+  });
+}
+function restoreClinic(){
+  $$('[data-clinic]').forEach(el => {
+    el.value = state.clinico[el.dataset.clinic] || '';
+  });
+}
+
+/* ============================================================
+   UI — INSTRUMENTOS
+   ============================================================ */
+
+function newInstrument(){
   return {
-    id:null, createdAt:null, updatedAt:null,
-    triagem:{ childName:"",birthDate:"",guardianName:"",guardianRelation:"",guardianPhone:"",guardianEmail:"",
-      school:"",priorDiagnosis:"",referredBy:"",otherTherapies:"",referralReason:"",chiefComplaint:"",
-      pregnancyBirth:"",prematurity:"",birthWeight:"",milestoneSit:"",milestoneCrawl:"",milestoneWalk:"",
-      milestoneWords:"",milestoneToilet:"",allergies:"",familyRoutine:"",sleep:"",feeding:"",healthHistory:"",medications:"" },
-    checklist: emptyChecklist(),
-    observacao:{ engagement:"",playType:"",motorObs:"",socialObs:"",selfRegObs:"",adlNotes:"" },
-    achados:{ domainPatterns: emptyDomainPatterns(), hypotheses:"", priorityAreas:"" },
-    documentacao:{ reportDraft:"", devolutivaFamilia:"", encaminhamentos:"" },
-    plano:{ goals:[], homeProgram:"", schoolGuidance:"", frequency:"", frequencyNotes:"" }
+    id: 'inst_' + Math.random().toString(36).slice(2,9),
+    nome:'', finalidade:'', data:'', dominios:'',
+    resultados:'', escores:'', condicoes:'', interpretacao:'',
+    cat:'', tipo:'', publico:'', acesso:'', descCat:''
   };
 }
 
-/* Deep merge recursivo: preserva defaults para campos ausentes em registros antigos. */
-function deepMerge(base, override){
-  if(Array.isArray(base)) return Array.isArray(override) ? override.slice() : base.slice();
-  if(base && typeof base === "object"){
-    const out = Object.assign({}, base);
-    if(override && typeof override === "object" && !Array.isArray(override)){
-      for(const k of Object.keys(override)){
-        if(base[k] && typeof base[k]==="object" && !Array.isArray(base[k])){
-          out[k] = deepMerge(base[k], override[k]);
-        } else {
-          out[k] = override[k];
-        }
-      }
-    }
-    return out;
-  }
-  return override !== undefined ? override : base;
-}
-
-/* Garante estrutura válida independentemente da versão do registro salvo. */
-function normalizePatient(p){
-  if(!p || typeof p !== "object") return emptyPatient();
-  if(!p.checklist || typeof p.checklist !== "object") p.checklist = {};
-  DOMAINS.forEach(d=>{
-    const arr = p.checklist[d.key];
-    if(!Array.isArray(arr)){ p.checklist[d.key] = [0,0,0,0,0]; }
-    else {
-      p.checklist[d.key] = [0,1,2,3,4].map(i => typeof arr[i]==="number" ? arr[i] : 0);
-    }
-  });
-  p.achados = p.achados || {};
-  p.achados.domainPatterns = p.achados.domainPatterns || {};
-  DOMAINS.forEach(d=>{
-    if(!p.achados.domainPatterns[d.key] || typeof p.achados.domainPatterns[d.key]!=="object"){
-      p.achados.domainPatterns[d.key] = {pattern:"", note:""};
-    } else {
-      if(typeof p.achados.domainPatterns[d.key].pattern !== "string") p.achados.domainPatterns[d.key].pattern = "";
-      if(typeof p.achados.domainPatterns[d.key].note !== "string") p.achados.domainPatterns[d.key].note = "";
-    }
-  });
-  p.plano = p.plano || {};
-  if(!Array.isArray(p.plano.goals)) p.plano.goals = [];
-  p.plano.goals = p.plano.goals.filter(g => g && typeof g === "object");
-  return p;
-}
-
-/* ---------------- Storage layer ---------------- */
-const LOCAL_KEY = "sensorial_to_store_v1";
-const DEFAULT_STORE = () => ({settings:{clinicName:"",therapistName:"",credential:""}, patients:{}});
-
-function localRead(){
-  try{
-    const raw = localStorage.getItem(LOCAL_KEY);
-    if(!raw) return DEFAULT_STORE();
-    const parsed = JSON.parse(raw);
-    return Object.assign(DEFAULT_STORE(), parsed, {
-      settings: Object.assign(DEFAULT_STORE().settings, parsed.settings || {}),
-      patients: parsed.patients || {}
-    });
-  }catch(e){ return DEFAULT_STORE(); }
-}
-function localWrite(data){
-  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); }
-  catch(e){ /* quota / modo privado: ignora */ }
-}
-
-async function initStorage(){
-  try{
-    if(window.claude && typeof window.claude.use === "function"){
-      dbNS = await window.claude.use("db");
-    }
-  }catch(e){ dbNS = null; }
-}
-
-async function loadSettings(){
-  if(dbNS){
-    try{
-      const snap = await dbNS.doc("settings/config").get();
-      if(snap && snap.exists){
-        settings = Object.assign({clinicName:"",therapistName:"",credential:""}, snap.data());
-      }
-    }catch(e){ /* mantém default */ }
-  }else{
-    settings = Object.assign({clinicName:"",therapistName:"",credential:""}, localRead().settings);
-  }
-}
-async function saveSettingsToStore(){
-  if(dbNS){
-    try{ await dbNS.doc("settings/config").set(settings); }catch(e){}
-  }else{
-    const local = localRead();
-    local.settings = settings;
-    localWrite(local);
-  }
-}
-
-async function loadPatientList(){
-  if(dbNS){
-    try{
-      const q = await dbNS.collection("patients").orderBy("updatedAt","desc").limit(500).get();
-      patients = q.docs.map(d=>{
-        const data = d.data()||{};
-        return {id:d.id, name:(data.triagem&&data.triagem.childName)||"Sem nome", updatedAt:data.updatedAt||""};
-      });
-    }catch(e){ patients = []; }
-  }else{
-    const local = localRead();
-    patients = Object.keys(local.patients||{}).map(id=>{
-      const p = local.patients[id];
-      return {id, name:(p.triagem&&p.triagem.childName)||"Sem nome", updatedAt:p.updatedAt||""};
-    }).sort((a,b)=> (b.updatedAt||"").localeCompare(a.updatedAt||""));
-  }
-}
-
-async function loadPatient(id){
-  let raw = null;
-  if(dbNS){
-    try{
-      const snap = await dbNS.collection("patients").doc(id).get();
-      if(snap && snap.exists) raw = snap.data();
-    }catch(e){ raw = null; }
-  }else{
-    const local = localRead();
-    raw = (local.patients && local.patients[id]) || null;
-  }
-  if(!raw) return null;
-  const merged = deepMerge(emptyPatient(), raw);
-  merged.id = id;
-  return normalizePatient(merged);
-}
-
-async function persistPatient(patient){
-  patient.updatedAt = new Date().toISOString();
-  if(dbNS){
-    await dbNS.collection("patients").doc(patient.id).set(patient);
-  }else{
-    const local = localRead();
-    local.patients = local.patients || {};
-    local.patients[patient.id] = patient;
-    localWrite(local);
-  }
-}
-
-/* Grava de forma síncrona no localStorage — usado no beforeunload. */
-function emergencySyncSave(){
-  if(!currentPatient || dbNS) return;
-  try{
-    const local = localRead();
-    local.patients = local.patients || {};
-    local.patients[currentPatient.id] = currentPatient;
-    localWrite(local);
-  }catch(e){}
-}
-
-function genId(prefix){
-  return (prefix||"p_")+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);
-}
-
-async function createPatientRecord(name, birthDate){
-  const p = emptyPatient();
-  p.triagem.childName = name || "";
-  p.triagem.birthDate = birthDate || "";
-  p.createdAt = new Date().toISOString();
-  p.updatedAt = p.createdAt;
-  p.id = genId("p_");
-  if(dbNS){
-    await dbNS.collection("patients").doc(p.id).set(p);
-  }else{
-    const local = localRead();
-    local.patients = local.patients || {};
-    local.patients[p.id] = p;
-    localWrite(local);
-  }
-  return p;
-}
-
-async function deletePatientRecord(id){
-  if(dbNS){
-    try{ await dbNS.collection("patients").doc(id).delete(); }catch(e){}
-  }else{
-    const local = localRead();
-    if(local.patients) delete local.patients[id];
-    localWrite(local);
-  }
-}
-
-/* ---------------- Utilities ---------------- */
-function setPath(obj, path, value){
-  const parts = path.split(".");
-  let cur = obj;
-  for(let i=0;i<parts.length-1;i++){
-    if(!cur[parts[i]] || typeof cur[parts[i]] !== "object") cur[parts[i]] = {};
-    cur = cur[parts[i]];
-  }
-  cur[parts[parts.length-1]] = value;
-}
-function getPath(obj, path){
-  const parts = path.split(".");
-  let cur = obj;
-  for(const p of parts){ if(cur==null) return undefined; cur = cur[p]; }
-  return cur;
-}
-function esc(str){
-  return String(str==null?"":str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function calcAge(birthDateStr){
-  if(!birthDateStr) return "";
-  const b = new Date(birthDateStr+"T00:00:00");
-  if(isNaN(b.getTime())) return "";
-  const now = new Date();
-  let years = now.getFullYear()-b.getFullYear();
-  let months = now.getMonth()-b.getMonth();
-  if(now.getDate() < b.getDate()) months--;
-  if(months<0){ years--; months+=12; }
-  if(years<0) return "";
-  if(years===0) return months+" m";
-  return years+" a "+months+" m";
-}
-function fmtDate(iso){
-  if(!iso) return "";
-  const d = new Date(iso);
-  if(isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("pt-BR");
-}
-function showToast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(showToast._tm);
-  showToast._tm = setTimeout(()=>t.classList.remove("show"), 1800);
-}
-
-/* ---------------- Rendering: domains checklist (step 2) ---------------- */
-function renderScaleLegend(){
-  const el = document.getElementById("scaleLegend");
-  el.innerHTML = SCALE_LABELS.map((l,i)=>`<span><b>${i}</b> ${esc(l)}</span>`).join("");
-}
-
-function domainAverage(patient, key){
-  const arr = (patient.checklist && patient.checklist[key]) || [0,0,0,0,0];
-  if(!arr.length) return 0;
-  const sum = arr.reduce((a,b)=>a+(typeof b==="number"?b:0),0);
-  return sum/arr.length;
-}
-function domainAverageLabel(avg){
-  if(avg < 1) return "poucos indicadores";
-  if(avg < 2) return "alguns indicadores";
-  if(avg < 3) return "indicadores moderados";
-  return "indicadores acentuados";
-}
-
-function renderDomainsChecklist(patient){
-  const container = document.getElementById("domainsContainer");
-  container.innerHTML = "";
-  DOMAINS.forEach(d=>{
-    const card = document.createElement("div");
-    card.className = "domain-card";
-    card.style.borderLeftColor = d.color;
-    card.dataset.domain = d.key;
-
-    const head = document.createElement("div");
-    head.className = "domain-head";
-    head.innerHTML = `<span class="domain-dot" style="background:${d.color}"></span>
-      <span class="domain-name">${esc(d.label)}</span>
-      <span class="domain-badge" data-badge="${d.key}"></span>
-      <span class="domain-caret">▸</span>`;
-    head.addEventListener("click", ()=> card.classList.toggle("open"));
-
-    const body = document.createElement("div");
-    body.className = "domain-body";
-    d.items.forEach((text, idx)=>{
-      const row = document.createElement("div");
-      row.className = "check-item";
-      const scaleBtns = [0,1,2,3,4].map(v=>`<button type="button" class="scale-btn" data-domain="${d.key}" data-item="${idx}" data-value="${v}" aria-label="${esc(SCALE_LABELS[v])}">${v}</button>`).join("");
-      row.innerHTML = `<span class="check-item-text">${esc(text)}</span><div class="scale">${scaleBtns}</div>`;
-      body.appendChild(row);
-    });
-
-    card.appendChild(head);
-    card.appendChild(body);
-    container.appendChild(card);
-  });
-
-  container.querySelectorAll(".scale-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const dom = btn.dataset.domain, item = parseInt(btn.dataset.item,10), val = parseInt(btn.dataset.value,10);
-      if(!currentPatient.checklist[dom]) currentPatient.checklist[dom] = [0,0,0,0,0];
-      currentPatient.checklist[dom][item] = val;
-      hydrateDomainButtons(dom);
-      updateDomainBadge(dom);
-      scheduleSave();
-    });
-  });
-
-  DOMAINS.forEach(d=>{ hydrateDomainButtons(d.key); updateDomainBadge(d.key); });
-}
-function hydrateDomainButtons(domainKey){
-  const arr = (currentPatient.checklist && currentPatient.checklist[domainKey]) || [0,0,0,0,0];
-  document.querySelectorAll(`.scale-btn[data-domain="${domainKey}"]`).forEach(btn=>{
-    const item = parseInt(btn.dataset.item,10), val = parseInt(btn.dataset.value,10);
-    btn.classList.toggle("active", arr[item]===val);
-  });
-}
-function updateDomainBadge(domainKey){
-  const avg = domainAverage(currentPatient, domainKey);
-  const badge = document.querySelector(`[data-badge="${domainKey}"]`);
-  if(badge) badge.textContent = avg.toFixed(1)+"/4 · "+domainAverageLabel(avg);
-}
-
-/* ---------------- Rendering: achados (step 3) ---------------- */
-function renderAchados(patient){
-  const container = document.getElementById("achadosContainer");
-  container.innerHTML = "";
-  DOMAINS.forEach(d=>{
-    const avg = domainAverage(patient, d.key);
-    const row = document.createElement("div");
-    row.className = "achado-row";
-    const options = PATTERN_OPTIONS.map(o=>`<option value="${o.value}">${esc(o.label)}</option>`).join("");
-    row.innerHTML = `
-      <div class="achado-label">
-        <span class="domain-dot" style="background:${d.color}"></span>
-        <div><strong style="font-size:13px;">${esc(d.label)}</strong><div class="achado-hint">checklist: ${avg.toFixed(1)}/4</div></div>
-      </div>
-      <select data-path="achados.domainPatterns.${d.key}.pattern">${options}</select>
-      <textarea data-path="achados.domainPatterns.${d.key}.note" placeholder="Observações sobre este domínio" style="min-height:40px;"></textarea>
-    `;
-    container.appendChild(row);
-  });
-}
-
-/* ---------------- Rendering: goals (step 5) ---------------- */
-function createGoalCard(goal){
-  const card = document.createElement("div");
-  card.className = "goal-card";
-  card.dataset.uid = goal._uid;
-  const areaOptions = GOAL_AREAS.map(a=>`<option value="${esc(a)}" ${goal.area===a?"selected":""}>${esc(a)}</option>`).join("");
-  card.innerHTML = `
-    <div class="goal-card-head"><span>Objetivo</span><button type="button" class="btn btn-danger btn-sm" data-remove-goal="${goal._uid}">Remover</button></div>
-    <label class="field"><span class="field-label">Área alvo</span>
-      <select data-goal-field="area"><option value="">Selecionar</option>${areaOptions}</select>
-    </label>
-    <label class="field"><span class="field-label">Objetivo específico</span><textarea data-goal-field="objective" style="min-height:55px;"></textarea></label>
-    <div class="grid-2">
-      <label class="field"><span class="field-label">Como será medido</span><input type="text" data-goal-field="measure"></label>
-      <label class="field"><span class="field-label">Prazo estimado</span><input type="text" data-goal-field="deadline" placeholder="ex: 3 meses"></label>
-    </div>
-  `;
-  card.querySelector('[data-goal-field="objective"]').value = goal.objective||"";
-  card.querySelector('[data-goal-field="measure"]').value = goal.measure||"";
-  card.querySelector('[data-goal-field="deadline"]').value = goal.deadline||"";
-
-  card.querySelectorAll("[data-goal-field]").forEach(input=>{
-    input.addEventListener("input", ()=>{
-      const g = currentPatient.plano.goals.find(x=>x._uid===goal._uid);
-      if(g){ g[input.dataset.goalField] = input.value; scheduleSave(); }
-    });
-    input.addEventListener("change", ()=>{
-      const g = currentPatient.plano.goals.find(x=>x._uid===goal._uid);
-      if(g){ g[input.dataset.goalField] = input.value; scheduleSave(); }
-    });
-  });
-  card.querySelector("[data-remove-goal]").addEventListener("click", ()=>{
-    currentPatient.plano.goals = currentPatient.plano.goals.filter(x=>x._uid!==goal._uid);
-    card.remove();
-    scheduleSave();
-  });
-  return card;
-}
-function renderGoals(patient){
-  const container = document.getElementById("goalsContainer");
-  container.innerHTML = "";
-  (patient.plano.goals||[]).forEach(g=>{
-    if(!g._uid) g._uid = genId("g_");
-    container.appendChild(createGoalCard(g));
-  });
-}
-
-/* ---------------- Form hydration ---------------- */
-function hydrateForm(patient){
-  /* Renderiza os blocos dinâmicos primeiro, depois hidrata TODOS os data-path (estáticos + dinâmicos). */
-  renderDomainsChecklist(patient);
-  renderAchados(patient);
-  renderGoals(patient);
-  document.querySelectorAll("[data-path]").forEach(el=>{
-    const val = getPath(patient, el.dataset.path);
-    el.value = val==null ? "" : val;
-  });
-}
-
-/* ---------------- Save flow ---------------- */
-function setSaveStatus(state){
-  const el = document.getElementById("saveStatus");
-  el.className = "save-status "+state;
-  el.textContent = state==="pending" ? "Salvando..." : "Salvo";
-}
-function scheduleSave(){
-  if(!currentPatient) return;
-  setSaveStatus("pending");
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(flushSave, 700);
-}
-async function flushSave(){
-  clearTimeout(saveTimer);
-  saveTimer = null;
-  if(!currentPatient) return;
-  try{
-    await persistPatient(currentPatient);
-    setSaveStatus("saved");
-    const idx = patients.findIndex(p=>p.id===currentPatient.id);
-    const summary = {id:currentPatient.id, name:currentPatient.triagem.childName||"Sem nome", updatedAt:currentPatient.updatedAt};
-    if(idx>=0) patients[idx] = summary; else patients.unshift(summary);
-    patients.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
-    renderPatientList(document.getElementById("searchInput").value);
-    updatePatientHeader();
-  }catch(e){
-    setSaveStatus("pending");
-    showToast("Falha ao salvar — tentando novamente");
-  }
-}
-
-/* ---------------- Patient list / selection ---------------- */
-function renderPatientList(filter){
-  const list = document.getElementById("patientList");
-  const f = (filter||"").trim().toLowerCase();
-  const filtered = patients.filter(p=> !f || (p.name||"").toLowerCase().includes(f));
-  if(filtered.length===0){
-    list.innerHTML = `<div class="empty-list">${patients.length===0 ? "Nenhum paciente cadastrado ainda." : "Nenhum resultado."}</div>`;
+function renderInstruments(){
+  updateStatus();
+  const list = $('#instrumentsList');
+  list.innerHTML = '';
+  if (!state.instrumentos.length){
+    list.innerHTML = `<div class="alert alert-info"><span>ℹ️</span><div>Nenhum instrumento registrado. Clique em "Adicionar instrumento" para incluir.</div></div>`;
     return;
   }
-  list.innerHTML = "";
-  filtered.forEach(p=>{
-    const row = document.createElement("div");
-    row.className = "patient-row"+(currentPatient && currentPatient.id===p.id ? " active":"");
-    row.innerHTML = `<div class="patient-row-main"><div class="patient-row-name">${esc(p.name)}</div><div class="patient-row-meta">${p.updatedAt?("atualizado "+fmtDate(p.updatedAt)):""}</div></div>
-      <button class="icon-btn patient-row-del btn-sm" data-del="${p.id}" aria-label="Excluir paciente" style="width:26px;height:26px;">🗑</button>`;
-    row.addEventListener("click", (e)=>{
-      if(e.target.closest("[data-del]")) return;
-      selectPatient(p.id);
+  state.instrumentos.forEach((inst, i) => {
+    const el = document.createElement('div');
+    el.className = 'instrument-item';
+    el.dataset.id = inst.id;
+    el.innerHTML = `
+      <div class="instrument-head">
+        <span>Instrumento ${i+1}</span>
+        <button class="btn btn-danger btn-sm" data-remove="${inst.id}">Remover</button>
+      </div>
+      <div class="grid">
+        <div class="field grid-full">
+          <label>Instrumento (catálogo do modelo BASE 1.5)</label>
+          <select data-inst-cat>
+            <option value="">Selecione…</option>
+            ${CATALOGO_INSTR.map(c => `<option value="${escapeHtml(c.sigla)}" ${inst.cat === c.sigla ? 'selected' : ''}>${escapeHtml(c.sigla)} — ${escapeHtml(c.nome)}</option>`).join('')}
+            <option value="outro" ${inst.cat === 'outro' ? 'selected' : ''}>Outro instrumento (digitar abaixo)</option>
+          </select>
+          ${inst.tipo ? `<div class="alert alert-info" style="margin:6px 0 0"><span>📋</span><div><strong>${escapeHtml(inst.tipo)}</strong> · Público: ${escapeHtml(inst.publico)} · Acesso: <strong>${escapeHtml(inst.acesso)}</strong>${/comercial|licenc|verificar/i.test(inst.acesso) ? '<br>Confirme direitos/licença de uso e se o instrumento é permitido ao terapeuta ocupacional.' : ''}<br><small>${escapeHtml(inst.descCat)}</small></div></div>` : ''}
+        </div>
+        <div class="field grid-full">
+          <label>Nome completo do instrumento</label>
+          <input type="text" data-inst="nome" value="${escapeHtml(inst.nome)}" />
+        </div>
+        <div class="field">
+          <label>Finalidade da aplicação</label>
+          <input type="text" data-inst="finalidade" value="${escapeHtml(inst.finalidade)}" />
+        </div>
+        <div class="field">
+          <label>Data da aplicação</label>
+          <input type="date" data-inst="data" value="${escapeHtml(inst.data)}" />
+        </div>
+        <div class="field grid-full">
+          <label>Domínios avaliados</label>
+          <input type="text" data-inst="dominios" value="${escapeHtml(inst.dominios)}" />
+        </div>
+        <div class="field grid-full">
+          <label>Resultados obtidos</label>
+          <textarea data-inst="resultados" rows="2">${escapeHtml(inst.resultados)}</textarea>
+        </div>
+        <div class="field grid-full">
+          <label>Escores / classificações <span class="hint">(conforme o instrumento)</span></label>
+          <textarea data-inst="escores" rows="2">${escapeHtml(inst.escores)}</textarea>
+        </div>
+        <div class="field grid-full">
+          <label>Condições e limitações durante a aplicação</label>
+          <textarea data-inst="condicoes" rows="2">${escapeHtml(inst.condicoes)}</textarea>
+        </div>
+        <div class="field grid-full">
+          <label>Interpretação clínica do profissional</label>
+          <textarea data-inst="interpretacao" rows="2">${escapeHtml(inst.interpretacao)}</textarea>
+        </div>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+
+  // Listeners de coleta contínua
+  list.querySelectorAll('[data-inst-cat]').forEach(sel => sel.addEventListener('change', () => {
+    const inst = state.instrumentos.find(x => x.id === sel.closest('.instrument-item').dataset.id);
+    if (!inst) return;
+    const c = CATALOGO_INSTR.find(x => x.sigla === sel.value);
+    if (c) Object.assign(inst, { cat:c.sigla, nome:`${c.sigla} — ${c.nome}`, tipo:c.tipo, publico:c.publico, acesso:c.acesso, descCat:c.desc });
+    else Object.assign(inst, { cat: sel.value ? 'outro' : '', tipo:'', publico:'', acesso:'', descCat:'' });
+    renderInstruments();
+  }));
+  list.querySelectorAll('[data-inst]').forEach(input => {
+    input.addEventListener('input', () => {
+      const item = input.closest('.instrument-item');
+      const inst = state.instrumentos.find(x => x.id === item.dataset.id);
+      if (inst) inst[input.dataset.inst] = input.value.trim();
     });
-    row.querySelector("[data-del]").addEventListener("click", async (e)=>{
-      e.stopPropagation();
-      if(confirm(`Excluir o registro de "${p.name}"? Esta ação não pode ser desfeita.`)){
-        await deletePatientRecord(p.id);
-        patients = patients.filter(x=>x.id!==p.id);
-        if(currentPatient && currentPatient.id===p.id){ currentPatient=null; showEmptyState(); }
-        renderPatientList(document.getElementById("searchInput").value);
+  });
+  list.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.instrumentos = state.instrumentos.filter(x => x.id !== btn.dataset.remove);
+      renderInstruments();
+    });
+  });
+}
+
+$('#btnAddInstrument').addEventListener('click', () => {
+  state.instrumentos.push(newInstrument());
+  renderInstruments();
+});
+
+/* ============================================================
+   UI — PACIENTE / PROFISSIONAL
+   ============================================================ */
+
+function bindPatient(){
+  const map = {
+    pacNome:'nomeOuCodigo', pacNascimento:'dataNascimento',
+    pacResponsavel:'responsavelLegal', pacDataAval:'dataAvaliacao',
+    pacPeriodo:'periodoAcompanhamento', pacEncaminhante:'encaminhante',
+    pacMotivo:'motivoEncaminhamento', pacDemanda:'demandaPrincipal',
+    pacObjetivo:'objetivoDocumento'
+  };
+  Object.entries(map).forEach(([id, key]) => {
+    const el = $('#' + id);
+    el.addEventListener('input', () => {
+      state.paciente[key] = el.value.trim();
+      if (key === 'dataNascimento' || key === 'dataAvaliacao'){
+        const i = calcIdade(state.paciente.dataNascimento, state.paciente.dataAvaliacao);
+        $('#pacIdade').value = i; state.paciente.idade = i;
+      }
+      updateStatus();
+    });
+  });
+}
+
+function bindProfessional(){
+  const map = {
+    profNome:'nome', profRegistro:'registro', profLocal:'local', profContato:'contato', profCidade:'cidade'
+  };
+  Object.entries(map).forEach(([id, key]) => {
+    $('#' + id).addEventListener('input', e => {
+      if (id === 'profContato') e.target.value = maskTel(e.target.value);
+      state.profissional[key] = e.target.value.trim(); updateStatus();
+    });
+  });
+  $('#profLogotipo').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 250 * 1024){
+      alert('Arquivo muito grande. Utilize uma imagem de até ~200 KB.');
+      e.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => { state.profissional.logotipoDataUrl = ev.target.result; };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ============================================================
+   STATUS (indica quantas etapas estão preenchidas)
+   ============================================================ */
+
+function updateStatus(){
+  const filled = [
+    !!state.tipo,
+    !!(state.profissional.nome),
+    !!(state.paciente.nomeOuCodigo),
+    Object.values(state.clinico).filter(Boolean).length > 0,
+    state.instrumentos.length > 0
+  ].filter(Boolean).length;
+  $('#statusBadge').innerHTML = `<span class="badge badge-generated">${filled}/5 etapas</span>`;
+}
+
+/* ============================================================
+   MOTOR DE GERAÇÃO
+   ============================================================ */
+
+// Constrói o conteúdo HTML de cada seção conforme os dados
+function gerarSecoes(){
+  const tipo = state.tipo;
+  if (!tipo) return [];
+  const incluidas = new Set(TIPOS[tipo].secoes);
+  const secoesGeradas = [];
+
+  // ---- 1. Cabeçalho institucional ----
+  // (renderizado no template do A4, mas guardado como seção para permitir ocultar)
+  const prof = state.profissional;
+  const headerInfo = [];
+  if (prof.local) headerInfo.push(`<span class="doc-local">${escapeHtml(prof.local)}</span>`);
+  if (prof.nome) headerInfo.push(`<strong>${escapeHtml(prof.nome)}</strong>`);
+  if (prof.registro) headerInfo.push(`<span class="doc-reg">${escapeHtml(prof.registro)}</span>`);
+  if (prof.contato) headerInfo.push(`<span class="doc-tel">${escapeHtml(prof.contato)}</span>`);
+  secoesGeradas.push({
+    id: 1, titulo:'', conteudoHtml: headerInfo.join('<br>'),
+    editadoManualmente:false, oculta: !headerInfo.length
+  });
+
+  // ---- 2. Identificação do paciente ----
+  const p = state.paciente;
+  const linhas = [];
+  if (p.nomeOuCodigo) linhas.push(`<p><strong>Paciente:</strong> ${escapeHtml(p.nomeOuCodigo)}</p>`);
+  if (p.dataNascimento) {
+    const idade = calcIdade(p.dataNascimento, p.dataAvaliacao);
+    linhas.push(`<p><strong>Data de nascimento:</strong> ${formatDateBR(p.dataNascimento)}${idade ? ' (' + idade + ')' : ''}</p>`);
+  }
+  if (p.responsavelLegal) linhas.push(`<p><strong>Responsável legal:</strong> ${escapeHtml(p.responsavelLegal)}</p>`);
+  if (p.dataAvaliacao) linhas.push(`<p><strong>Data da avaliação:</strong> ${formatDateBR(p.dataAvaliacao)}</p>`);
+  if (p.periodoAcompanhamento) linhas.push(`<p><strong>Período de acompanhamento:</strong> ${escapeHtml(p.periodoAcompanhamento)}</p>`);
+  if (p.encaminhante) linhas.push(`<p><strong>Encaminhante:</strong> ${escapeHtml(p.encaminhante)}</p>`);
+  secoesGeradas.push({
+    id: 2, titulo: SECOES[2].titulo,
+    conteudoHtml: linhas.join('') || placeholder('Dados de identificação'),
+    editadoManualmente:false, oculta: !linhas.length
+  });
+
+  // ---- 3. Finalidade ----
+  const finalidade = [];
+  finalidade.push(`<p>O presente documento tem por finalidade ${p.objetivoDocumento ? escapeHtml(p.objetivoDocumento).replace(/^./, c => c.toLowerCase()).replace(/[.\s]+$/,'') : placeholder('descrever a finalidade')}.</p>`);
+  if (TIPOS[tipo].secoes.includes(12)) {
+    finalidade.push(`<p>Trata-se de relatório de acompanhamento evolutivo, referente ao período ${p.periodoAcompanhamento ? escapeHtml(p.periodoAcompanhamento) : '[período não informado]'}.</p>`);
+  }
+  secoesGeradas.push({
+    id: 3, titulo: SECOES[3].titulo, conteudoHtml: finalidade.join(''),
+    editadoManualmente:false, oculta:false
+  });
+
+  // ---- 4. Demanda ----
+  const dem = [];
+  if (p.motivoEncaminhamento) dem.push(`<p><strong>Motivo do encaminhamento:</strong> ${escapeHtml(p.motivoEncaminhamento)}</p>`);
+  if (p.demandaPrincipal) dem.push(htmlParagraphs(splitParagraphs(p.demandaPrincipal)));
+  const demanda = dem.join('') || placeholder('Descreva a demanda principal.');
+  secoesGeradas.push({
+    id: 4, titulo: SECOES[4].titulo, conteudoHtml: demanda,
+    editadoManualmente:false, oculta: !dem.length
+  });
+
+  // ---- 5. Histórico ----
+  const hist = [];
+  ['historicoOcupacional','anamnese','rotinaInteresses'].forEach(k => {
+    const cfg = CAMPOS_CLINICOS.find(c => c.k === k);
+    const val = state.clinico[k];
+    if (!val) return;
+    splitParagraphs(val).forEach((par, pi) => {
+      hist.push(`<p>${escapeHtml(comporParagrafo(par, pi === 0 ? (cfg?.prefixo || '') : ''))}</p>`);
+    });
+  });
+  secoesGeradas.push({
+    id: 5, titulo: SECOES[5].titulo,
+    conteudoHtml: hist.join('') || placeholder('Informações contextuais não fornecidas.'),
+    editadoManualmente:false, oculta: !hist.length
+  });
+
+  // ---- 6. Procedimentos e instrumentos ----
+  const proc = [];
+  if (state.instrumentos.length){
+    proc.push(`<p>Foram utilizados os seguintes instrumentos/procedimentos avaliativos:</p>`);
+    state.instrumentos.forEach(inst => {
+      const linhas = [];
+      linhas.push(`<strong>${escapeHtml(inst.nome || '[instrumento não nomeado]')}</strong>`);
+      if (inst.tipo) linhas.push(`Tipo: ${escapeHtml(inst.tipo)}${inst.publico ? '; público-alvo: ' + escapeHtml(inst.publico) : ''}.`);
+      if (inst.finalidade) linhas.push(`Finalidade: ${escapeHtml(inst.finalidade)}.`);
+      if (inst.data) linhas.push(`Aplicação em ${formatDateBR(inst.data)}.`);
+      if (inst.dominios) linhas.push(`Domínios avaliados: ${escapeHtml(inst.dominios)}.`);
+      proc.push(`<p>${linhas.join(' ')}</p>`);
+    });
+  } else {
+    proc.push(placeholder('Nenhum instrumento registrado.'));
+  }
+  secoesGeradas.push({
+    id: 6, titulo: SECOES[6].titulo, conteudoHtml: proc.join(''),
+    editadoManualmente:false, oculta:false
+  });
+
+  // ---- 7. Observações clínicas e análise do desempenho ocupacional ----
+  const obs = [];
+  ['avds','aivds','participacaoSocial','motorCoordenacao','sensorial','cognitivoExecutivo','comunicacao','brincarLazerTrabalho'].forEach(k => {
+    const cfg = CAMPOS_CLINICOS.find(c => c.k === k);
+    const val = state.clinico[k];
+    if (!val) return;
+    splitParagraphs(val).forEach((par, pi) => {
+      obs.push(`<p>${escapeHtml(comporParagrafo(par, pi === 0 ? (cfg?.prefixo || '') : ''))}</p>`);
+    });
+  });
+  secoesGeradas.push({
+    id: 7, titulo: SECOES[7].titulo,
+    conteudoHtml: obs.join('') || placeholder('Sem observações clínicas registradas para esta seção.'),
+    editadoManualmente:false, oculta: !obs.length
+  });
+
+  // ---- 8. Resultados das avaliações ----
+  const res = [];
+  state.instrumentos.forEach(inst => {
+    if (!inst.resultados && !inst.escores && !inst.interpretacao) return;
+    res.push(`<p><strong>${escapeHtml(inst.nome || 'Instrumento')}</strong></p>`);
+    if (inst.resultados) res.push(htmlParagraphs(splitParagraphs(inst.resultados), false));
+    if (inst.escores) res.push(`<p>Escores/classificações: ${escapeHtml(inst.escores)}</p>`);
+    if (inst.condicoes) res.push(`<p>Condições e limitações da aplicação: ${escapeHtml(inst.condicoes)}</p>`);
+    if (inst.interpretacao) res.push(`<p><em>Interpretação clínica:</em> ${escapeHtml(inst.interpretacao)}</p>`);
+  });
+  secoesGeradas.push({
+    id: 8, titulo: SECOES[8].titulo,
+    conteudoHtml: res.join('') || placeholder('Sem resultados de instrumentos a apresentar.'),
+    editadoManualmente:false, oculta: !res.length
+  });
+
+  // ---- 9. Potencialidades e dificuldades ----
+  const pot = [];
+  if (state.clinico.potencialidades) {
+    pot.push(`<p><strong>Potencialidades:</strong> ${escapeHtml(comporParagrafo(state.clinico.potencialidades))}</p>`);
+  }
+  if (state.clinico.dificuldades) {
+    pot.push(`<p><strong>Dificuldades funcionais:</strong> ${escapeHtml(comporParagrafo(state.clinico.dificuldades))}</p>`);
+  }
+  secoesGeradas.push({
+    id: 9, titulo: SECOES[9].titulo,
+    conteudoHtml: pot.join('') || placeholder('Sem registro de potencialidades e dificuldades.'),
+    editadoManualmente:false, oculta: !pot.length
+  });
+
+  // ---- 10. Análise de impactos funcionais ----
+  const imp = [];
+  if (state.clinico.barreirasFacilitadores) {
+    imp.push(`<p>${escapeHtml(comporParagrafo(state.clinico.barreirasFacilitadores))}</p>`);
+  }
+  // Síntese automática simples (não inferencial): se houver potencialidades + dificuldades
+  if (state.clinico.potencialidades && state.clinico.dificuldades){
+    /* síntese automática removida: análise é do terapeuta */
+  }
+  secoesGeradas.push({
+    id: 10, titulo: SECOES[10].titulo,
+    conteudoHtml: imp.join('') || placeholder('Dados insuficientes para análise de impacto funcional.'),
+    editadoManualmente:false, oculta: !imp.length
+  });
+
+  // ---- 11. Objetivos e intervenções ----
+  const obj = [];
+  if (state.clinico.objetivos) obj.push(htmlParagraphs(splitParagraphs(state.clinico.objetivos)));
+  if (state.clinico.intervencoes) obj.push(htmlParagraphs(splitParagraphs(state.clinico.intervencoes)));
+  secoesGeradas.push({
+    id: 11, titulo: SECOES[11].titulo,
+    conteudoHtml: obj.join('') || placeholder('Sem objetivos/intervenções registrados.'),
+    editadoManualmente:false, oculta: !obj.length
+  });
+
+  // ---- 12. Evolução clínica ----
+  // Só aparece em RA e RE. Reaproveita alguns campos.
+  const evo = [];
+  if (state.clinico.evolucao) evo.push(htmlParagraphs(splitParagraphs(state.clinico.evolucao)));
+  else evo.push(placeholder('Descreva a evolução clínica no período.'));
+  secoesGeradas.push({
+    id: 12, titulo: SECOES[12].titulo, conteudoHtml: evo.join(''),
+    editadoManualmente:false, oculta: false
+  });
+
+  // ---- 13. Considerações finais ----
+  const cf = [];
+  if (state.clinico.consideracoesFinais) cf.push(htmlParagraphs(splitParagraphs(state.clinico.consideracoesFinais)));
+  else cf.push(placeholder('Registre as considerações finais.'));
+  if (!Object.values(state.clinico).some(Boolean)){
+    cf.unshift(`<div class="alert alert-warn no-print" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;padding:10px 12px;border-radius:6px;font-size:11pt;margin-bottom:10px;">
+      ⚠️ Nenhum registro clínico foi inserido. Recomenda-se voltar ao formulário e complementar os dados antes da emissão.
+    </div>`);
+  }
+  secoesGeradas.push({
+    id: 13, titulo: SECOES[13].titulo, conteudoHtml: cf.join(''),
+    editadoManualmente:false, oculta:false
+  });
+
+  // ---- 14. Recomendações ----
+  const rec = [];
+  if (state.clinico.recomendacoes) rec.push(htmlParagraphs(splitParagraphs(state.clinico.recomendacoes)));
+  else rec.push(placeholder('Registre as recomendações e encaminhamentos.'));
+  secoesGeradas.push({
+    id: 14, titulo: SECOES[14].titulo, conteudoHtml: rec.join(''),
+    editadoManualmente:false, oculta:false
+  });
+
+  // ---- 15. Local, data e identificação ----
+  secoesGeradas.push({
+    id: 15, titulo: '',
+    conteudoHtml: `
+      <div class="doc-signature">
+        <p class="local-date">${escapeHtml(prof.cidade || '____________________')}, ${todayLongBR()}.</p>
+        <div class="line">
+          ${escapeHtml(prof.nome || '____________________')}<br>
+          <span style="font-size:9.5pt;color:#475569;">
+            Terapeuta Ocupacional${prof.registro ? ' — ' + escapeHtml(prof.registro) : ''}
+          </span>
+        </div>
+      </div>
+    `,
+    editadoManualmente:false, oculta:false
+  });
+
+  // Filtra apenas as seções incluídas no tipo escolhido
+  return secoesGeradas.filter(s => incluidas.has(s.id));
+}
+
+function placeholder(txt){
+  return `<p class="placeholder">[A preencher: ${escapeHtml(txt)}]</p>`;
+}
+
+/* ============================================================
+   RENDERIZAÇÃO DO DOCUMENTO
+   ============================================================ */
+
+function renderDocumento(){
+  const article = $('#docA4');
+  const secoes = state.relatorio.secoes;
+
+  // Cabeçalho institucional (fora das seções, no topo)
+  const headerSec = secoes.find(s => s.id === 1);
+  const headerHtml = headerSec && !headerSec.oculta ? `
+    <header class="doc-header">
+      ${state.profissional.logotipoDataUrl
+        ? `<img class="doc-logo" src="${state.profissional.logotipoDataUrl}" alt="Logotipo" />`
+        : ''}
+      <div class="doc-header-info">${headerSec.conteudoHtml}</div>
+    </header>
+  ` : '';
+
+  const tipoNome = TIPOS[state.tipo]?.nome || 'Relatório Técnico';
+  const titulo = `<h1 class="doc-title">${escapeHtml(tipoNome)}</h1>`;
+
+  // Seções 2..15 como blocos editáveis
+  const corpo = secoes
+    .filter(s => s.id !== 1)
+    .map(s => {
+      const tituloSec = s.titulo ? `<h3>${escapeHtml(s.titulo)}</h3>` : '';
+      return `
+        <section class="doc-section" data-id="${s.id}"
+          data-manual="${s.editadoManualmente}" ${s.oculta ? 'hidden' : ''}>
+          <div class="doc-section-head">
+            ${tituloSec || '<h3 style="border:none;"></h3>'}
+            <div class="doc-section-tools">
+              <button data-act="up" title="Mover para cima" aria-label="Mover seção para cima">↑</button>
+              <button data-act="down" title="Mover para baixo" aria-label="Mover seção para baixo">↓</button>
+              <button data-act="toggle" title="${s.oculta ? 'Mostrar' : 'Ocultar'}" aria-label="Mostrar ou ocultar seção">${s.oculta ? '👁' : '🚫'}</button>
+              <button data-act="reset" title="Restaurar versão gerada" aria-label="Restaurar versão gerada">↺</button>
+            </div>
+          </div>
+          ${tituloSec ? '' : ''}
+          <div class="doc-content" contenteditable="true" data-id="${s.id}">${s.conteudoHtml}</div>
+        </section>
+      `;
+    }).join('');
+
+  article.innerHTML = headerHtml + titulo + corpo + `
+    <footer class="doc-footer no-print">
+      Documento gerado em ${new Date().toLocaleString('pt-BR')} — minuta técnica sujeita à revisão e assinatura do profissional responsável.
+    </footer>
+  `;
+
+  bindDocEvents();
+}
+
+// Re-renderiza apenas o cabeçalho (para refletir o título do tipo de relatório)
+function bindDocEvents(){
+  const article = $('#docA4');
+
+  // Edição inline — marca seção como editada manualmente
+  article.querySelectorAll('.doc-content').forEach(el => {
+    el.addEventListener('input', () => {
+      const id = Number(el.dataset.id);
+      const sec = state.relatorio.secoes.find(s => s.id === id);
+      if (sec){
+        sec.conteudoHtml = el.innerHTML;
+        sec.editadoManualmente = true;
+        el.closest('.doc-section')?.setAttribute('data-manual','true');
       }
     });
-    list.appendChild(row);
-  });
-}
-
-async function selectPatient(id){
-  await flushSave();
-  const p = await loadPatient(id);
-  if(!p) return;
-  currentPatient = p;
-  currentStep = 1;
-  document.getElementById("emptyState").style.display = "none";
-  document.getElementById("workspace").style.display = "block";
-  hydrateForm(currentPatient);
-  setStep(1);
-  updatePatientHeader();
-  setSaveStatus("saved");
-  renderPatientList(document.getElementById("searchInput").value);
-  closeSidebarMobile();
-}
-function updatePatientHeader(){
-  if(!currentPatient) return;
-  const name = currentPatient.triagem.childName || "Paciente sem nome";
-  const age = calcAge(currentPatient.triagem.birthDate);
-  document.getElementById("patientTitle").textContent = name;
-  document.getElementById("patientSub").textContent = age ? ("idade: "+age) : "data de nascimento não informada";
-}
-function showEmptyState(){
-  document.getElementById("emptyState").style.display = "flex";
-  document.getElementById("workspace").style.display = "none";
-}
-
-/* ---------------- Step navigation ---------------- */
-function setStep(step){
-  currentStep = step;
-  document.querySelectorAll(".step-panel").forEach(s=> s.classList.toggle("active", parseInt(s.dataset.step,10)===step));
-  document.querySelectorAll(".step-tab").forEach(t=> t.classList.toggle("active", parseInt(t.dataset.step,10)===step));
-  const main = document.querySelector(".main");
-  if(main) main.scrollTop = 0;
-  window.scrollTo(0,0);
-}
-
-/* ---------------- Report generation ---------------- */
-function line(label, value){
-  return value ? (label+": "+value+"\n") : "";
-}
-function buildReportDraft(patient){
-  const t = patient.triagem, ob = patient.observacao, ac = patient.achados;
-  const age = calcAge(t.birthDate);
-  let out = "";
-  out += `Paciente: ${t.childName||"—"}${age?", "+age:""}.\n`;
-  out += line("Responsável", [t.guardianName, t.guardianRelation].filter(Boolean).join(" — "));
-  out += line("Escola", t.school);
-  out += line("Diagnóstico(s) prévio(s)", t.priorDiagnosis);
-  out += "\n";
-  out += line("Motivo do encaminhamento", t.referralReason);
-  out += line("Queixa principal", t.chiefComplaint);
-  out += "\n";
-
-  const historico = [];
-  if(t.pregnancyBirth) historico.push("Gestação/parto: "+t.pregnancyBirth);
-  if(t.prematurity) historico.push("prematuridade: "+t.prematurity);
-  if(t.milestoneSit||t.milestoneCrawl||t.milestoneWalk||t.milestoneWords)
-    historico.push("marcos motores e de linguagem dentro do relatado pela família (sentou: "+(t.milestoneSit||"-")+", engatinhou: "+(t.milestoneCrawl||"-")+", andou: "+(t.milestoneWalk||"-")+", primeiras palavras: "+(t.milestoneWords||"-")+")");
-  if(historico.length) out += "Histórico de desenvolvimento: "+historico.join("; ")+".\n\n";
-
-  const obsParts = [];
-  if(ob.engagement) obsParts.push("Engajamento: "+ob.engagement);
-  if(ob.playType) obsParts.push("Brincar: "+ob.playType);
-  if(ob.motorObs) obsParts.push("Motor: "+ob.motorObs);
-  if(ob.socialObs) obsParts.push("Social: "+ob.socialObs);
-  if(ob.selfRegObs) obsParts.push("Autorregulação: "+ob.selfRegObs);
-  if(obsParts.length) out += "Observação clínica: "+obsParts.join(". ")+".\n\n";
-
-  out += "Achados por domínio sensorial:\n";
-  DOMAINS.forEach(d=>{
-    const dp = (ac.domainPatterns && ac.domainPatterns[d.key]) || {};
-    if(dp.pattern || dp.note){
-      out += "- "+d.label+": "+(PATTERN_LABELS[dp.pattern]||"—")+(dp.note?(" — "+dp.note):"")+"\n";
-    }
-  });
-  out += "\n";
-  out += line("Hipóteses clínicas e funcionais", ac.hypotheses);
-  out += line("Áreas prioritárias para intervenção", ac.priorityAreas);
-  return out.trim();
-}
-function buildFamilyDraft(patient){
-  const t = patient.triagem, ac = patient.achados;
-  const name = t.childName || "seu filho(a)";
-  const greetName = t.guardianName || "responsável";
-  const notedDomains = DOMAINS.filter(d=>{
-    const dp = (ac.domainPatterns && ac.domainPatterns[d.key]) || {};
-    return dp.pattern && dp.pattern!=="sem_alteracao";
-  });
-  let out = `Olá, ${greetName}!\n\n`;
-  out += `Durante a avaliação de ${name}, conversamos, observamos o brincar e usamos alguns checklists para entender melhor como ${name} percebe e responde aos estímulos do dia a dia (toque, movimento, sons, luzes, cheiros e sabores).\n\n`;
-  if(notedDomains.length){
-    out += "O que observamos:\n";
-    notedDomains.forEach(d=>{
-      const dp = ac.domainPatterns[d.key];
-      out += "- "+d.label+": "+PATTERN_FAMILY_PHRASE[dp.pattern]+".\n";
+    // Evita colar com formatação estranha
+    el.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
     });
-    out += "\n";
+  });
+
+  // Ferramentas por seção
+  article.querySelectorAll('[data-act]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const sec = btn.closest('.doc-section');
+      const id = Number(sec.dataset.id);
+      const idx = state.relatorio.secoes.findIndex(s => s.id === id);
+      if (idx < 0) return;
+      const act = btn.dataset.act;
+      if (act === 'up' && idx > 1){ // não mover antes do cabeçalho
+        [state.relatorio.secoes[idx-1], state.relatorio.secoes[idx]] =
+        [state.relatorio.secoes[idx], state.relatorio.secoes[idx-1]];
+      } else if (act === 'down' && idx < state.relatorio.secoes.length - 1){
+        [state.relatorio.secoes[idx+1], state.relatorio.secoes[idx]] =
+        [state.relatorio.secoes[idx], state.relatorio.secoes[idx+1]];
+      } else if (act === 'toggle'){
+        state.relatorio.secoes[idx].oculta = !state.relatorio.secoes[idx].oculta;
+        state.relatorio.secoes[idx].ocultaManual = true;
+      } else if (act === 'reset'){
+        if (!confirm('Restaurar esta seção para a versão gerada? Suas edições serão perdidas.')) return;
+        regenerateSingleSection(id);
+      }
+      renderDocumento();
+    });
+  });
+}
+
+// Regenera apenas uma seção específica, sem afetar as demais
+function regenerateSingleSection(id){
+  const todas = gerarSecoes();
+  const nova = todas.find(s => s.id === id);
+  if (!nova) return;
+  const idx = state.relatorio.secoes.findIndex(s => s.id === id);
+  if (idx >= 0){
+    state.relatorio.secoes[idx] = {
+      ...nova,
+      oculta: state.relatorio.secoes[idx].ocultaManual ? state.relatorio.secoes[idx].oculta : nova.oculta,
+      ocultaManual: state.relatorio.secoes[idx].ocultaManual
+    };
   }
-  out += "Isso não é sobre 'comportamento', mas sobre a forma como o corpo processa as informações do ambiente — e entender esse padrão ajuda a apoiar melhor a rotina.\n\n";
-  if(t.chiefComplaint) out += "Sobre a queixa que trouxeram (" + t.chiefComplaint + "), seguimos observando com atenção nas próximas sessões.\n\n";
-  out += "Próximos passos: vamos conversar sobre o plano terapêutico e as orientações para casa.\n\nQualquer dúvida, estamos à disposição.";
-  return out;
 }
 
-/* ---------------- Print ---------------- */
-function buildPrintHTML(patient, cfg){
-  const t = patient.triagem, doc = patient.documentacao, plano = patient.plano;
-  const reportText = doc.reportDraft && doc.reportDraft.trim() ? doc.reportDraft : buildReportDraft(patient);
-  const familyText = doc.devolutivaFamilia && doc.devolutivaFamilia.trim() ? doc.devolutivaFamilia : buildFamilyDraft(patient);
-  const age = calcAge(t.birthDate);
+/* ============================================================
+   REGENERAÇÃO GLOBAL (preservando edições manuais)
+   ============================================================ */
 
-  let goalsHtml = "";
-  (plano.goals||[]).forEach((g,i)=>{
-    goalsHtml += `<div class="pr-goal"><strong>${i+1}. ${esc(g.area||"Objetivo")}</strong><br>${esc(g.objective||"")}${g.measure?("<br><em>Medida:</em> "+esc(g.measure)):""}${g.deadline?(" · <em>Prazo:</em> "+esc(g.deadline)):""}</div>`;
+function gerarRelatorioCompleto(){
+  if (!state.tipo){
+    showValidation('Selecione um tipo de relatório antes de gerar.');
+    return;
+  }
+  collectClinic();
+  LOGTEC.clear();
+  const novas = gerarSecoes();
+
+  if (!state.relatorio.secoes.length){
+    // Primeira geração — usa diretamente
+    state.relatorio.secoes = novas;
+  } else {
+    // Preserva edições manuais e ordem/ocultação
+    const antigas = state.relatorio.secoes;
+    const ordem = antigas.map(s => s.id);
+    novas.sort((a,b) => ordem.indexOf(a.id) - ordem.indexOf(b.id));
+    novas.forEach(n => {
+      const old = antigas.find(s => s.id === n.id);
+      if (old?.editadoManualmente){
+        n.conteudoHtml = old.conteudoHtml;
+        n.editadoManualmente = true;
+      }
+      if (old?.ocultaManual){ n.oculta = old.oculta; n.ocultaManual = true; }
+    });
+    state.relatorio.secoes = novas;
+  }
+
+  renderDocumento();
+  renderTermos();
+  showView('view-preview');
+  updateStatus();
+
+  // Validação pós-geração
+  const avisos = [];
+  if (!state.clinico || Object.values(state.clinico).filter(Boolean).length === 0){
+    avisos.push('Nenhum registro clínico foi preenchido — o documento conterá vários campos “[A preencher]”.');
+  }
+  if (!state.instrumentos.length){
+    avisos.push('Nenhum instrumento registrado.');
+  }
+  if (!state.paciente.nomeOuCodigo) avisos.push('Identificação do paciente não informada.');
+  if (!state.profissional.registro) avisos.push('Registro profissional (CREFITO) não informado.');
+  if (document.querySelector('#docA4 .placeholder')) avisos.push('Há campos “[A preencher]” no documento.');
+  if (state.relatorio.secoes.some(s => s.editadoManualmente)) avisos.push('Seções editadas à mão foram preservadas e não refletem mudanças do formulário (use ↺ para atualizar).');
+  if (!state.profissional.nome){
+    avisos.push('Nome do profissional não informado — a identificação no cabeçalho ficará incompleta.');
+  }
+  if (avisos.length){
+    showValidation('Atenção: ' + avisos.join(' '));
+  } else {
+    $('#validationBox').hidden = true;
+  }
+}
+
+function showValidation(msg){
+  const box = $('#validationBox');
+  box.hidden = false;
+  box.innerHTML = `<span>⚠️</span><div>${escapeHtml(msg)}</div>`;
+}
+
+/* ============================================================
+   EXPORTAÇÃO
+   ============================================================ */
+
+// Copiar texto integral
+async function copyReport(){
+  const article = $('#docA4');
+  const partes = [];
+  article.querySelectorAll('.doc-header-info, .doc-title').forEach(e => partes.push(e.innerText.trim()));
+  article.querySelectorAll('.doc-section:not([hidden])').forEach(s => {
+    const t = s.querySelector('h3')?.innerText.trim();
+    partes.push((t ? t.toUpperCase() + '\n' : '') + s.querySelector('.doc-content').innerText.trim());
   });
-  if(!goalsHtml) goalsHtml = "<p>Nenhum objetivo registrado ainda.</p>";
-
-  const freqLabels = {"1x":"1x por semana","2x":"2x por semana","3x":"3x por semana",quinzenal:"Quinzenal",reavaliar:"A reavaliar em breve"};
-
-  return `
-    <div class="pr-header">
-      <div class="clinic">${esc(cfg.clinicName || "Sistema de Avaliação Sensorial")}</div>
-      <div class="therapist">${esc(cfg.therapistName||"")}${cfg.credential?(" · "+esc(cfg.credential)):""}</div>
-      <div class="date">Relatório gerado em ${new Date().toLocaleDateString("pt-BR")}</div>
-    </div>
-    <div class="pr-section">
-      <h3>Dados do paciente</h3>
-      <div class="pr-grid">
-        <span><strong>Nome:</strong> ${esc(t.childName)}</span>
-        <span><strong>Idade:</strong> ${esc(age)}</span>
-        <span><strong>Responsável:</strong> ${esc(t.guardianName)} ${esc(t.guardianRelation?("("+t.guardianRelation+")"):"")}</span>
-        <span><strong>Escola:</strong> ${esc(t.school)}</span>
-      </div>
-    </div>
-    <div class="pr-section"><h3>Relatório terapêutico</h3><p>${esc(reportText)}</p></div>
-    <div class="pr-section"><h3>Devolutiva para a família</h3><p>${esc(familyText)}</p></div>
-    ${doc.encaminhamentos ? `<div class="pr-section"><h3>Encaminhamentos e recomendações</h3><p>${esc(doc.encaminhamentos)}</p></div>` : ""}
-    <div class="pr-section">
-      <h3>Plano terapêutico</h3>
-      ${goalsHtml}
-      ${plano.homeProgram?`<p><strong>Programa em casa:</strong> ${esc(plano.homeProgram)}</p>`:""}
-      ${plano.schoolGuidance?`<p><strong>Orientação à escola:</strong> ${esc(plano.schoolGuidance)}</p>`:""}
-      ${plano.frequency?`<p><strong>Frequência recomendada:</strong> ${esc(freqLabels[plano.frequency]||plano.frequency)} ${plano.frequencyNotes?("— "+esc(plano.frequencyNotes)):""}</p>`:""}
-    </div>
-    <div class="pr-sign">
-      ${esc(cfg.therapistName||"")}${cfg.credential?(" — "+esc(cfg.credential)):""}<br>
-      ${esc(cfg.clinicName||"")}
-    </div>
-  `;
-}
-function printReport(){
-  if(!currentPatient) return;
-  document.getElementById("print-report").innerHTML = buildPrintHTML(currentPatient, settings);
-  setTimeout(()=> window.print(), 50);
+  const texto = partes.join('\n\n');
+  try {
+    await navigator.clipboard.writeText(texto);
+    toast('Texto copiado para a área de transferência.');
+  } catch {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    toast('Texto copiado.');
+  }
 }
 
-/* ---------------- Sidebar mobile ---------------- */
-function openSidebarMobile(){
-  document.getElementById("sidebar").classList.add("open");
-  document.getElementById("sidebarOverlay").classList.add("open");
+// Exportar DOCX
+function nomeArquivo(){
+  const n = (state.paciente.nomeOuCodigo || 'paciente').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w]+/g,'_').replace(/^_+|_+$/g,'');
+  return `Relatorio_TO_${n}_${todayISO()}`;
 }
-function closeSidebarMobile(){
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("sidebarOverlay").classList.remove("open");
+function confirmarPendencias(){
+  const n = $$('#docA4 .doc-content .placeholder').length;
+  return !n || confirm(`O documento ainda tem ${n} campo(s) "[A preencher]". Deseja continuar mesmo assim?`);
+}
+function imprimir(){
+  if (!$('#docA4 .doc-section')) { alert('Gere a minuta antes de imprimir.'); return; }
+  if (!confirmarPendencias()) return;
+  const t = document.title;
+  document.title = nomeArquivo();
+  window.addEventListener('afterprint', () => { document.title = t; }, { once:true });
+  window.print();
 }
 
-/* ---------------- Wire up events ---------------- */
-function wireEvents(){
-  const mainInner = document.getElementById("mainInner");
-
-  mainInner.addEventListener("input", (e)=>{
-    const path = e.target.dataset.path;
-    if(path && currentPatient){
-      setPath(currentPatient, path, e.target.value);
-      if(path==="triagem.childName" || path==="triagem.birthDate") updatePatientHeader();
-      scheduleSave();
+async function exportDocx(){
+  const article = $('#docA4');
+  if (!article.querySelector('.doc-section')){ alert('Gere a minuta antes de exportar.'); return; }
+  if (!confirmarPendencias()) return;
+  try {
+    const docx = await loadDocxLib();
+    const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Footer, PageNumber, BorderStyle, Table, TableRow, TableCell, WidthType, VerticalAlign } = docx;
+    const FONT = 'Arial';
+    const run = (text, o={}) => new TextRun({ text, font:o.font||FONT, size:o.size||22, bold:o.bold, italics:o.italics, color:o.color });
+    const inlineRuns = (node, base={}) => {
+      const out = [];
+      node.childNodes.forEach(n => {
+        if (n.nodeType === 3){ const t = n.textContent.replace(/\s+/g,' '); if (t.trim() || t === ' ') out.push(run(t, base)); }
+        else if (n.nodeType === 1){
+          if (n.tagName === 'BR') out.push(new TextRun({ break:1 }));
+          else out.push(...inlineRuns(n, { ...base, bold: base.bold || /^(STRONG|B)$/.test(n.tagName), italics: base.italics || /^(EM|I)$/.test(n.tagName), color: n.classList.contains('placeholder') ? 'B45309' : base.color }));
+        }
+      });
+      return out;
+    };
+    const blocks = (root, out) => {
+      root.childNodes.forEach(n => {
+        if (n.nodeType === 3){ const t = n.textContent.trim(); if (t) out.push(new Paragraph({ children:[run(t)], spacing:{ after:120 } })); return; }
+        if (n.nodeType !== 1 || n.classList.contains('no-print')) return;
+        if (n.querySelector('p,div')){ blocks(n, out); return; }
+        const kids = inlineRuns(n);
+        if (!kids.length) return;
+        const isLine = n.classList.contains('line'), isLocal = n.classList.contains('local-date');
+        out.push(new Paragraph({
+          children: kids, keepLines: true,
+          alignment: isLine ? AlignmentType.CENTER : (isLocal ? AlignmentType.LEFT : AlignmentType.JUSTIFIED),
+          spacing: { before: isLine ? 700 : 0, after: 120, line: 300 },
+          border: isLine ? { top:{ style:BorderStyle.SINGLE, size:6, color:'334155', space:4 } } : undefined
+        }));
+      });
+    };
+    const pf = state.profissional, children = [];
+    const img = article.querySelector('.doc-logo');
+    const tipoImg = ((pf.logotipoDataUrl || '').match(/^data:image\/(png|jpe?g|gif|bmp)/) || [])[1];
+    const centro = (t, o) => new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ after:20 }, children:[run(t, o)] });
+    const linhas = [];
+    if (pf.local) linhas.push(centro(pf.local, { font:'Bodoni MT Black', bold:true, size:72, color:'475569' }));
+    if (pf.nome) linhas.push(centro(pf.nome, { font:'Bookman Old Style', bold:true, size:40, color:'0F172A' }));
+    if (pf.registro) linhas.push(centro(pf.registro, { font:'Arial', size:20, color:'475569' }));
+    if (pf.contato) linhas.push(centro(pf.contato, { font:'Arial', size:24, color:'475569' }));
+    let logoPar = null;
+    if (img && tipoImg){
+      const H = 70, W = Math.min(150, Math.round(H * (img.naturalWidth || 1) / (img.naturalHeight || 1)));
+      const bin = atob(pf.logotipoDataUrl.split(',')[1]);
+      logoPar = new Paragraph({ children:[ new ImageRun({ data:Uint8Array.from(bin, c => c.charCodeAt(0)), type: tipoImg === 'jpeg' ? 'jpg' : tipoImg, transformation:{ width:W, height:H } }) ] });
     }
-  });
-  mainInner.addEventListener("change", (e)=>{
-    const path = e.target.dataset.path;
-    if(path && currentPatient){
-      setPath(currentPatient, path, e.target.value);
-      if(path==="triagem.childName" || path==="triagem.birthDate") updatePatientHeader();
-      scheduleSave();
-    }
-  });
-
-  document.querySelectorAll(".step-tab").forEach(tab=>{
-    tab.addEventListener("click", ()=> setStep(parseInt(tab.dataset.step,10)));
-  });
-  document.querySelectorAll("[data-goto]").forEach(btn=>{
-    btn.addEventListener("click", ()=> setStep(parseInt(btn.dataset.goto,10)));
-  });
-
-  document.getElementById("genReportBtn").addEventListener("click", ()=>{
-    if(!currentPatient) return;
-    const ta = document.querySelector('[data-path="documentacao.reportDraft"]');
-    const text = buildReportDraft(currentPatient);
-    ta.value = text;
-    currentPatient.documentacao.reportDraft = text;
-    scheduleSave();
-    showToast("Rascunho gerado");
-  });
-  document.getElementById("genFamilyBtn").addEventListener("click", ()=>{
-    if(!currentPatient) return;
-    const ta = document.querySelector('[data-path="documentacao.devolutivaFamilia"]');
-    const text = buildFamilyDraft(currentPatient);
-    ta.value = text;
-    currentPatient.documentacao.devolutivaFamilia = text;
-    scheduleSave();
-    showToast("Rascunho gerado");
-  });
-
-  document.getElementById("addGoalBtn").addEventListener("click", ()=>{
-    if(!currentPatient) return;
-    const goal = {_uid:genId("g_"), area:"",objective:"",measure:"",deadline:""};
-    currentPatient.plano.goals.push(goal);
-    document.getElementById("goalsContainer").appendChild(createGoalCard(goal));
-    scheduleSave();
-  });
-
-  document.getElementById("printBtn").addEventListener("click", printReport);
-  document.getElementById("finishBtn").addEventListener("click", printReport);
-
-  document.getElementById("menuToggle").addEventListener("click", openSidebarMobile);
-  document.getElementById("sidebarOverlay").addEventListener("click", closeSidebarMobile);
-
-  document.getElementById("searchInput").addEventListener("input", (e)=> renderPatientList(e.target.value));
-
-  document.getElementById("newPatientBtn").addEventListener("click", openNewPatientModal);
-  document.getElementById("emptyNewBtn").addEventListener("click", openNewPatientModal);
-  document.getElementById("npCancel").addEventListener("click", closeNewPatientModal);
-  document.getElementById("npCreate").addEventListener("click", async ()=>{
-    const name = document.getElementById("npName").value.trim();
-    const birth = document.getElementById("npBirth").value;
-    if(!name){ showToast("Informe o nome da criança"); return; }
-    await flushSave();
-    const p = await createPatientRecord(name, birth);
-    patients.unshift({id:p.id, name:p.triagem.childName, updatedAt:p.updatedAt});
-    closeNewPatientModal();
-    currentPatient = p;
-    currentStep = 1;
-    document.getElementById("emptyState").style.display = "none";
-    document.getElementById("workspace").style.display = "block";
-    hydrateForm(currentPatient);
-    setStep(1);
-    updatePatientHeader();
-    setSaveStatus("saved");
-    renderPatientList();
-    closeSidebarMobile();
-  });
-
-  document.getElementById("settingsBtn").addEventListener("click", openSettingsModal);
-  document.getElementById("cfgCancel").addEventListener("click", closeSettingsModal);
-  document.getElementById("cfgSave").addEventListener("click", async ()=>{
-    settings.clinicName = document.getElementById("cfgClinicName").value.trim();
-    settings.therapistName = document.getElementById("cfgTherapistName").value.trim();
-    settings.credential = document.getElementById("cfgCredential").value.trim();
-    await saveSettingsToStore();
-    applySettingsToBrand();
-    closeSettingsModal();
-    showToast("Configurações salvas");
-  });
-
-  /* Fechar modais ao clicar fora */
-  document.getElementById("settingsModal").addEventListener("click", (e)=>{
-    if(e.target.id === "settingsModal") closeSettingsModal();
-  });
-  document.getElementById("newPatientModal").addEventListener("click", (e)=>{
-    if(e.target.id === "newPatientModal") closeNewPatientModal();
-  });
-
-  /* Fechamento de aba: salva de forma síncrona no localStorage como rede de segurança. */
-  window.addEventListener("beforeunload", ()=>{
-    if(saveTimer) emergencySyncSave();
-  });
+    const nb = { style:BorderStyle.NONE, size:0, color:'FFFFFF' };
+    const bordas = { top:nb, bottom:nb, left:nb, right:nb };
+    if (logoPar && linhas.length){
+      children.push(new Table({ width:{ size:100, type:WidthType.PERCENTAGE }, borders:{ ...bordas, insideHorizontal:nb, insideVertical:nb }, rows:[ new TableRow({ children:[
+        new TableCell({ width:{ size:22, type:WidthType.PERCENTAGE }, borders:bordas, verticalAlign:VerticalAlign.CENTER, children:[logoPar] }),
+        new TableCell({ width:{ size:78, type:WidthType.PERCENTAGE }, borders:bordas, verticalAlign:VerticalAlign.CENTER, children:linhas }) ] }) ] }));
+    } else { if (logoPar) children.push(logoPar); children.push(...linhas); }
+    if (logoPar || linhas.length) children.push(new Paragraph({ border:{ bottom:{ style:BorderStyle.SINGLE, size:12, color:'0F766E', space:4 } }, spacing:{ after:200 } }));
+    children.push(new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ before:200, after:300 }, children:[ run((TIPOS[state.tipo]?.nome || 'Relatório').toUpperCase(), { bold:true, size:26 }) ] }));
+    article.querySelectorAll('.doc-section:not([hidden])').forEach(s => {
+      const t = s.querySelector('h3')?.textContent.trim();
+      if (t) children.push(new Paragraph({ keepNext:true, spacing:{ before:240, after:100 }, border:{ bottom:{ style:BorderStyle.SINGLE, size:4, color:'CBD5E1', space:2 } }, children:[ run(t, { bold:true, size:23, color:'115E59' }) ] }));
+      blocks(s.querySelector('.doc-content'), children);
+    });
+    const gray = { size:18, color:'64748B' };
+    const doc = new Document({
+      creator: pf.nome || 'Terapeuta Ocupacional', title: TIPOS[state.tipo]?.nome || 'Relatório',
+      styles:{ default:{ document:{ run:{ font:FONT, size:22 } } } },
+      sections:[{
+        properties:{ page:{ size:{ width:11906, height:16838 }, margin:{ top:1134, right:1134, bottom:1134, left:1134 } } },
+        footers:{ default:new Footer({ children:[ new Paragraph({ alignment:AlignmentType.CENTER, children:[ run('Página ', gray), new TextRun({ children:[PageNumber.CURRENT], font:FONT, ...gray }), run(' de ', gray), new TextRun({ children:[PageNumber.TOTAL_PAGES], font:FONT, ...gray }) ] }) ] }) },
+        children
+      }]
+    });
+    downloadBlob(await Packer.toBlob(doc), nomeArquivo() + '.docx');
+    toast('Documento Word exportado.');
+  } catch (err){
+    console.error(err);
+    exportDocFallback();
+  }
 }
 
-function openNewPatientModal(){
-  document.getElementById("npName").value = "";
-  document.getElementById("npBirth").value = "";
-  document.getElementById("newPatientModal").classList.add("open");
-  document.getElementById("npName").focus();
-}
-function closeNewPatientModal(){ document.getElementById("newPatientModal").classList.remove("open"); }
-function openSettingsModal(){
-  document.getElementById("cfgClinicName").value = settings.clinicName||"";
-  document.getElementById("cfgTherapistName").value = settings.therapistName||"";
-  document.getElementById("cfgCredential").value = settings.credential||"";
-  document.getElementById("settingsModal").classList.add("open");
-}
-function closeSettingsModal(){ document.getElementById("settingsModal").classList.remove("open"); }
-
-function applySettingsToBrand(){
-  document.getElementById("brandTitle").textContent = settings.clinicName || "Sistema de Avaliação Sensorial";
-  document.getElementById("brandSub").textContent = settings.therapistName ? ("Terapeuta responsável: "+settings.therapistName) : "Terapia Ocupacional infantil";
+function exportDocFallback(){
+  const c = $('#docA4').cloneNode(true);
+  c.querySelectorAll('.no-print,.doc-section-tools,[hidden]').forEach(e => e.remove());
+  c.querySelectorAll('[contenteditable]').forEach(e => e.removeAttribute('contenteditable'));
+  const css = 'body{font-family:Arial;font-size:11pt;line-height:1.4}h1{text-align:center;font-size:14pt}h3{color:#115e59;font-size:11.5pt;border-bottom:1px solid #999}p{text-align:justify}.doc-header-info{text-align:center}.doc-local{display:block;font:bold 36pt "Bodoni MT Black"}.doc-header-info strong{display:block;font:bold 20pt "Bookman Old Style"}.doc-reg{display:block;font:10pt Arial}.doc-tel{display:block;font:12pt Arial}';
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório</title><style>${css}</style></head><body>${c.innerHTML}</body></html>`;
+  downloadBlob(new Blob(['\ufeff', html], { type:'application/msword' }), nomeArquivo() + '.doc');
+  toast('Biblioteca Word indisponível (sem internet?): exportado como .doc de compatibilidade.');
 }
 
-/* ---------------- Init ---------------- */
-async function init(){
-  renderScaleLegend();
-  wireEvents();
-  await initStorage();
-  await loadSettings();
-  applySettingsToBrand();
-  await loadPatientList();
-  renderPatientList();
-  showEmptyState();
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-if(document.readyState === "loading"){
-  document.addEventListener("DOMContentLoaded", init);
-}else{
-  init();
+
+// Toast simples
+function toast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 10px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .2s;';
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.style.opacity = '1');
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2200);
 }
+
+/* ============================================================
+   PERSISTÊNCIA LOCAL (opt-in)
+   ============================================================ */
+
+const STORAGE_KEY = 'to-relatorios-draft-v1';
+
+function saveLocal(){
+  collectClinic();
+  try {
+    const payload = {
+      tipo: state.tipo,
+      profissional: state.profissional,
+      paciente: state.paciente,
+      clinico: state.clinico,
+      instrumentos: state.instrumentos,
+      relatorio: state.relatorio,
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    toast('Rascunho salvo neste navegador.');
+  } catch (e){
+    alert('Não foi possível salvar. Verifique se o navegador permite armazenamento local.');
+  }
+}
+
+function loadLocal(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) { toast('Nenhum rascunho encontrado.'); return; }
+    const data = JSON.parse(raw);
+    if (!confirm('Carregar o rascunho salvo? Isso substituirá os dados atuais do formulário.')) return;
+    state.tipo = data.tipo || null;
+    state.profissional = data.profissional || state.profissional;
+    state.paciente = data.paciente || {};
+    state.clinico = data.clinico || {};
+    state.instrumentos = data.instrumentos || [];
+    state.relatorio = data.relatorio || { secoes: [] };
+
+    // Reflete no formulário
+    $$('#reportTypes .type-card').forEach(c => c.classList.toggle('selected', c.dataset.type === state.tipo));
+    Object.entries({
+      profNome:'nome', profRegistro:'registro', profLocal:'local', profContato:'contato', profCidade:'cidade'
+    }).forEach(([id, k]) => { $('#' + id).value = state.profissional[k] || ''; });
+
+    Object.entries({
+      pacNome:'nomeOuCodigo', pacNascimento:'dataNascimento', pacResponsavel:'responsavelLegal',
+      pacDataAval:'dataAvaliacao', pacPeriodo:'periodoAcompanhamento',
+      pacEncaminhante:'encaminhante', pacMotivo:'motivoEncaminhamento',
+      pacDemanda:'demandaPrincipal', pacObjetivo:'objetivoDocumento'
+    }).forEach(([id, k]) => { $('#' + id).value = state.paciente[k] || ''; });
+    $('#pacIdade').value = calcIdade(state.paciente.dataNascimento);
+
+    restoreClinic();
+    renderInstruments();
+    updateStatus();
+    if (state.relatorio.secoes.length) renderDocumento();
+    toast('Rascunho carregado.');
+  } catch (e){
+    alert('Erro ao carregar rascunho.');
+  }
+}
+
+function clearLocal(){
+  if (!confirm('Apagar todos os dados salvos neste navegador? Esta ação não pode ser desfeita.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  toast('Dados locais apagados.');
+}
+
+/* ============================================================
+   NOVO RELATÓRIO
+   ============================================================ */
+
+function novoRelatorio(){
+  if (!confirm('Iniciar um novo relatório? Todos os dados não salvos serão perdidos.')) return;
+  if (!confirm('Confirma novamente? Esta ação não pode ser desfeita.')) return;
+
+  state.tipo = null;
+  state.profissional = { nome:'', registro:'', local:'', contato:'', logotipoDataUrl:'' };
+  state.paciente = {};
+  state.clinico = {};
+  state.instrumentos = [];
+  state.relatorio = { secoes: [] };
+
+  // Limpa UI
+  $$('#reportTypes .type-card').forEach(c => c.classList.remove('selected'));
+  ['profNome','profRegistro','profCidade','profLocal','profContato','profLogotipo',
+   'pacNome','pacNascimento','pacResponsavel','pacDataAval','pacPeriodo',
+   'pacEncaminhante','pacMotivo','pacDemanda','pacObjetivo','pacIdade'
+  ].forEach(id => { const el = $('#' + id); if (el) el.value = ''; });
+  $$('[data-clinic]').forEach(el => el.value = '');
+  renderInstruments();
+  $('#docA4').innerHTML = '<div class="doc-placeholder text-muted text-sm">Clique em <strong>Gerar / Regenerar minuta</strong> para produzir o documento.</div>';
+  $('#validationBox').hidden = true;
+  updateStatus();
+  showView('view-type');
+  toast('Formulário limpo.');
+}
+
+/* ============================================================
+   LIGAÇÕES DE EVENTOS
+   ============================================================ */
+
+$('#btnGenerate').addEventListener('click', gerarRelatorioCompleto);
+$('#chkTecnico').addEventListener('change', e => { OPC.tecnico = e.target.checked; if (state.relatorio.secoes.length) gerarRelatorioCompleto(); });
+// Tema claro/escuro (preferência guardada só neste navegador)
+const THEME_KEY = 'to-relatorios-theme';
+let tema = 'light';
+try { tema = localStorage.getItem(THEME_KEY) || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch (e) {}
+function aplicarTema(t){
+  document.documentElement.dataset.theme = t;
+  const b = $('#btnTheme');
+  b.textContent = t === 'dark' ? '☀️' : '🌙';
+  b.title = t === 'dark' ? 'Modo claro' : 'Modo escuro';
+  b.setAttribute('aria-pressed', String(t === 'dark'));
+}
+aplicarTema(tema);
+$('#btnTheme').addEventListener('click', () => {
+  tema = tema === 'dark' ? 'light' : 'dark';
+  aplicarTema(tema);
+  try { localStorage.setItem(THEME_KEY, tema); } catch (e) {}
+});
+$('#btnBackToForm').addEventListener('click', () => showView('view-clinic'));
+$('#btnPrint').addEventListener('click', imprimir);
+$('#btnPrint2').addEventListener('click', imprimir);
+$('#btnCopy').addEventListener('click', copyReport);
+$('#btnCopy2').addEventListener('click', copyReport);
+$('#btnDocx').addEventListener('click', exportDocx);
+$('#btnDocx2').addEventListener('click', exportDocx);
+$('#btnSaveLocal').addEventListener('click', saveLocal);
+$('#btnLoadLocal').addEventListener('click', loadLocal);
+$('#btnClearLocal').addEventListener('click', clearLocal);
+$('#btnNew').addEventListener('click', novoRelatorio);
+$('#btnNew2').addEventListener('click', novoRelatorio);
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+
+(function init(){
+  buildClinicCards();
+  $$('[data-clinic]').forEach(el => el.addEventListener('input', () => { collectClinic(); updateStatus(); }));
+  window.addEventListener('beforeunload', e => { if (state.paciente.nomeOuCodigo || Object.values(state.clinico).some(Boolean)) { e.preventDefault(); e.returnValue = ''; } });
+  bindPatient();
+  bindProfessional();
+  renderInstruments();
+  updateStatus();
+  // Pré-preenche data da avaliação
+  $('#pacDataAval').value = todayISO();
+  state.paciente.dataAvaliacao = todayISO();
+})();
+
 })();
 </script>
-</body>
-</html>
+      </body>
+    </html>
